@@ -258,21 +258,42 @@
                 <span style="cursor: pointer; font-size: 1.5em;" onclick="closeSettings()">&times;</span>
             </div>
 
-            <div class="form-group">
-                <label>Doble: Dto. Directo (%)</label>
-                <input type="number" id="cfg-discount-double" step="0.1">
-            </div>
-            <div class="form-group">
-                <label>Doble Eco: Dto. Directo (%)</label>
-                <input type="number" id="cfg-discount-double-eco" step="0.1">
-            </div>
-            <div class="form-group">
-                <label>Triple: Dto. Directo (%)</label>
-                <input type="number" id="cfg-discount-triple" step="0.1">
-            </div>
-            <div class="form-group">
-                <label>Individual: Dto. Directo (%)</label>
-                <input type="number" id="cfg-discount-individual" step="0.1">
+            <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>Doble: Dto. Directo (%)</label>
+                    <input type="number" id="cfg-discount-double" step="0.1" class="yellow-input">
+                </div>
+                <div class="form-group">
+                    <label>Doble: Dto. Booking (%)</label>
+                    <input type="number" id="cfg-booking-double" step="0.1" class="yellow-input">
+                </div>
+
+                <div class="form-group">
+                    <label>Eco: Dto. Directo (%)</label>
+                    <input type="number" id="cfg-discount-double-eco" step="0.1" class="yellow-input">
+                </div>
+                <div class="form-group">
+                    <label>Eco: Dto. Booking (%)</label>
+                    <input type="number" id="cfg-booking-double-eco" step="0.1" class="yellow-input">
+                </div>
+
+                <div class="form-group">
+                    <label>Triple: Dto. Directo (%)</label>
+                    <input type="number" id="cfg-discount-triple" step="0.1" class="yellow-input">
+                </div>
+                <div class="form-group">
+                    <label>Triple: Dto. Booking (%)</label>
+                    <input type="number" id="cfg-booking-triple" step="0.1" class="yellow-input">
+                </div>
+
+                <div class="form-group">
+                    <label>Indiv: Dto. Directo (%)</label>
+                    <input type="number" id="cfg-discount-individual" step="0.1" class="yellow-input">
+                </div>
+                <div class="form-group">
+                    <label>Indiv: Dto. Booking (%)</label>
+                    <input type="number" id="cfg-booking-individual" step="0.1" class="yellow-input">
+                </div>
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: 20px;">

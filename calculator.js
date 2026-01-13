@@ -159,35 +159,53 @@ function loadSettings() {
 
 function openSettings() {
     const settings = loadSettings();
-    document.getElementById('cfg-discount-double').value = settings.double;
-    document.getElementById('cfg-discount-double-eco').value = settings.doubleEco;
-    document.getElementById('cfg-discount-triple').value = settings.triple;
-    document.getElementById('cfg-discount-individual').value = settings.individual;
-    document.getElementById('cfg-booking-double').value = settings.bookingDouble;
-    document.getElementById('cfg-booking-double-eco').value = settings.bookingDoubleEco;
-    document.getElementById('cfg-booking-triple').value = settings.bookingTriple;
-    document.getElementById('cfg-booking-individual').value = settings.bookingIndividual;
+    const fields = {
+        'cfg-discount-double': settings.double,
+        'cfg-discount-double-eco': settings.doubleEco,
+        'cfg-discount-triple': settings.triple,
+        'cfg-discount-individual': settings.individual,
+        'cfg-booking-double': settings.bookingDouble,
+        'cfg-booking-double-eco': settings.bookingDoubleEco,
+        'cfg-booking-triple': settings.bookingTriple,
+        'cfg-booking-individual': settings.bookingIndividual
+    };
 
-    document.getElementById('settingsModal').style.display = 'block';
-    document.body.classList.add('modal-open');
+    for (const [id, value] of Object.entries(fields)) {
+        const el = document.getElementById(id);
+        if (el) el.value = value;
+    }
+
+    const modal = document.getElementById('settingsModal');
+    if (modal) {
+        modal.style.display = 'block';
+        document.body.classList.add('modal-open');
+    }
 }
 
 function closeSettings() {
-    document.getElementById('settingsModal').style.display = 'none';
+    const modal = document.getElementById('settingsModal');
+    if (modal) modal.style.display = 'none';
     document.body.classList.remove('modal-open');
 }
 
 function saveSettings() {
-    const settings = {
-        double: parseFloat(document.getElementById('cfg-discount-double').value) || 0,
-        doubleEco: parseFloat(document.getElementById('cfg-discount-double-eco').value) || 0,
-        triple: parseFloat(document.getElementById('cfg-discount-triple').value) || 0,
-        individual: parseFloat(document.getElementById('cfg-discount-individual').value) || 0,
-        bookingDouble: parseFloat(document.getElementById('cfg-booking-double').value) || 0,
-        bookingDoubleEco: parseFloat(document.getElementById('cfg-booking-double-eco').value) || 0,
-        bookingTriple: parseFloat(document.getElementById('cfg-booking-triple').value) || 0,
-        bookingIndividual: parseFloat(document.getElementById('cfg-booking-individual').value) || 0
+    const getValue = (id, def) => {
+        const el = document.getElementById(id);
+        return el ? parseFloat(el.value) || 0 : def;
     };
+
+    const current = loadSettings();
+    const settings = {
+        double: getValue('cfg-discount-double', current.double),
+        doubleEco: getValue('cfg-discount-double-eco', current.doubleEco),
+        triple: getValue('cfg-discount-triple', current.triple),
+        individual: getValue('cfg-discount-individual', current.individual),
+        bookingDouble: getValue('cfg-booking-double', current.bookingDouble),
+        bookingDoubleEco: getValue('cfg-booking-double-eco', current.bookingDoubleEco),
+        bookingTriple: getValue('cfg-booking-triple', current.bookingTriple),
+        bookingIndividual: getValue('cfg-booking-individual', current.bookingIndividual)
+    };
+
     localStorage.setItem('hotelBahiaSettings', JSON.stringify(settings));
     closeSettings();
     updateDefaultDiscount();

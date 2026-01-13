@@ -236,7 +236,9 @@ label {
     font-size: 0.85em;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
@@ -246,7 +248,8 @@ input, select, textarea {
     background: #fafafa;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(191, 96, 12, 0.1);
@@ -257,8 +260,17 @@ input:focus, select:focus {
 }
 
 /* UTILITY CLASSES */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
 
 /* RESULTS AND COMPARISON */
 .result-box {
@@ -267,7 +279,7 @@ input:focus, select:focus {
     border-radius: 8px;
     border-left: 4px solid var(--primary-color);
     margin-bottom: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .result-box.highlight {
@@ -314,7 +326,8 @@ footer a {
 .comparison-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 400px; /* Force scroll on very small screens */
+    min-width: 400px;
+    /* Force scroll on very small screens */
 }
 
 .comparison-table th {
@@ -341,7 +354,7 @@ footer a {
     top: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(5px);
 }
 
@@ -382,29 +395,62 @@ footer a {
 
     .header-left {
         width: 100%;
-        justify-content: space-between;
+        flex-direction: column;
+        align-items: center;
         gap: 10px;
+    }
+
+    .logo-section {
+        width: 100%;
+        justify-content: center;
     }
 
     .main-nav {
         width: 100%;
         justify-content: center;
         background: #f8f9fa;
-        border-radius: 6px;
-        height: 40px;
+        border-radius: 8px;
+        height: 60px;
+        padding: 5px;
     }
 
     .nav-link {
-        font-size: 0.75em;
+        font-size: 0.8em;
         flex: 1;
         justify-content: center;
+        padding: 6px 0;
+        border-radius: 6px;
+        flex-direction: column;
+        gap: 2px;
+        height: auto;
+    }
+
+    .nav-link i {
+        font-size: 1.25em;
+    }
+
+    .nav-link.active {
+        background: white;
+        color: var(--primary-color);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        font-weight: 700;
+    }
+
+    .nav-link.active::after {
+        display: none;
+    }
+
+    .nav-text {
+        font-size: 0.8em;
+        font-weight: 600;
     }
 
     .header-right {
         width: 100%;
     }
 
-    .header-right .btn, .header-right .settings-btn {
+    .header-right .btn,
+    .header-right .settings-btn {
         width: 100%;
     }
 
@@ -412,7 +458,8 @@ footer a {
         padding: 16px;
     }
 
-    .grid-2, .grid-3 {
+    .grid-2,
+    .grid-3 {
         grid-template-columns: 1fr;
     }
 
@@ -425,15 +472,36 @@ footer a {
         margin-bottom: 15px !important;
     }
 
-    .room-item select { grid-column: span 2; }
-    .room-item input { grid-column: span 1; }
-    .room-item .btn-remove { grid-column: span 2; width: 100%; }
+    .room-item select {
+        grid-column: span 2;
+    }
 
-    .result-value { font-size: 1.25em; }
-    .highlight .result-value { font-size: 1.75em; }
+    .room-item input {
+        grid-column: span 1;
+    }
+
+    .room-item .btn-remove {
+        grid-column: span 2;
+        width: 100%;
+    }
+
+    .result-value {
+        font-size: 1.25em;
+    }
+
+    .highlight .result-value {
+        font-size: 1.75em;
+    }
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
