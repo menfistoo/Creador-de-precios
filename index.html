@@ -243,6 +243,22 @@
                                 € <span id="resultBookingExpected">0.00</span>
                             </div>
                         </div>
+
+                        <!-- BOOKING COMPARISON SECTION -->
+                        <div id="bookingComparisonSection" style="margin-top: 25px; border-top: 2px solid #003580; padding-top: 20px;">
+                            <h3 style="color: #003580;"><i class="fa-solid fa-scale-balanced"></i> Comparativa Booking</h3>
+                            <div class="form-group">
+                                <label>Precio Booking (€ CON TT incluida)</label>
+                                <input type="number" id="bookingPrice" step="0.01" placeholder="Ej: 250.00" class="yellow-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Descuento Mobile Booking (%)</label>
+                                <input type="number" id="bookingMobileDiscount" step="0.1" value="10" class="yellow-input">
+                            </div>
+                            <button type="button" onclick="calculateBookingComparison()" class="btn btn-primary" style="width: 100%; background: #003580;">
+                                <i class="fa-solid fa-scale-balanced"></i> Comparar con Booking
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
