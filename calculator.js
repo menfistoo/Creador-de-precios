@@ -442,7 +442,7 @@ function calculateBookingComparison() {
 
     // 11. Store comparison data in window.currentQuotation for printing
     window.currentQuotation.comparisonPerformed = true;
-    window.currentQuotation.bookingPriceInput = bookingPriceInput;
+    window.currentQuotation.bookingPrice = bookingPriceInput;
     window.currentQuotation.bookingBase = bookingBase;
     window.currentQuotation.bookingMobileDiscount = bookingMobileDiscount;
     window.currentQuotation.bookingDifferential = bookingDifferential;
