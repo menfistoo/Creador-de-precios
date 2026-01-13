@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotizador de Precios - Hotel Bahía</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #fcfcfc;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 40px);
+        }
+
+        header {
+            background: white;
+            border-bottom: 4px solid #bf600c;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 90px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            height: 100%;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        header img {
+            height: 55px;
+            object-fit: contain;
+        }
+
+        header .hotel-info h1 {
+            font-size: 1.4em;
+            color: #1a1a1a;
+            margin-bottom: 2px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        header .hotel-info p {
+            font-size: 0.75em;
+            color: #888;
+            margin: 0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .main-nav {
+            display: flex;
+            height: 100%;
+            gap: 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 20px;
+            text-decoration: none;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.9em;
+            height: 100%;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #bf600c;
+            background: #fdf6ec;
+        }
+
+        .nav-link.active {
+            color: #bf600c;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #bf600c;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 7px 15px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            font-size: 0.72em;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #bf600c;
+            color: white;
+            box-shadow: 0 4px 12px rgba(191, 96, 12, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: #a3520a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(191, 96, 12, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #555;
+            border: 1px solid #ddd;
+        }
+
+        .btn-outline:hover {
+            border-color: #bf600c;
+            color: #bf600c;
+            background: #fdf6ec;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+
+
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 2px;
+            border: 1px solid #eee;
+        }
+
+        .section h2 {
+            color: #1a1a1a;
+            font-size: 1.2em;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #bf600c;
+            padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .section h2 i {
+            color: #bf600c;
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h3 i {
+            color: #bf600c;
+            width: 20px;
+            text-align: center;
+        }
+
+        button i {
+            margin-right: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 2px;
+            font-size: 0.9em;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #bf600c;
+            box-shadow: 0 0 5px rgba(191, 96, 12, 0.2);
+        }
+
+        input[type="number"] {
+            text-align: right;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .input-group.three {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .input-group.full {
+            grid-template-columns: 1fr;
+        }
+
+        .yellow-input {
+            background-color: #fcfcfc !important;
+            border: 1px solid #ddd !important;
+            font-weight: 500;
+        }
+
+        .yellow-input:focus {
+            border-color: #bf600c !important;
+        }
+
+        button {
+            /* Legacy support - will be overridden by .btn class mostly */
+            cursor: pointer;
+        }
+
+        .result-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #bf600c;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .result-box:hover {
+            transform: translateX(5px);
+        }
+
+        .result-box.highlight {
+            background: #fff8f1;
+            border-left-color: #bf600c;
+            padding: 20px;
+            border: 1px solid #ffe8d1;
+            border-left-width: 8px;
+        }
+
+        .result-box.warning {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+        }
+
+        .result-label {
+            color: #7f8c8d;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            font-size: 1.6em;
+            font-weight: 800;
+            color: #2c3e50;
+        }
+
+        .result-box.highlight .result-value {
+            color: #bf600c;
+            font-size: 2.2em;
+        }
+
+        .details-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #bf600c;
+            cursor: pointer;
+            font-weight: 700;
+            padding: 12px;
+            background: #fff5eb;
+            border-radius: 8px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            border: 1px solid #ffd8b1;
+        }
+
+        .details-toggle:hover {
+            background: #bf600c;
+            color: white;
+        }
+
+        .details-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .button-group button {
+            margin: 0;
+            width: 100%;
+        }
+
+        .info-box {
+            background: #f9f9f9;
+            border: 1px solid #eee;
+            border-left: 4px solid #bf600c;
+            border-radius: 2px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #555;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .comparison-table th {
+            background: #f4f4f4;
+            color: #333;
+            padding: 12px;
+            text-align: left;
+            font-weight: 700;
+            border-bottom: 2px solid #bf600c;
+            text-transform: uppercase;
+            font-size: 0.8em;
+            letter-spacing: 1px;
+        }
+
+        .comparison-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .comparison-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .currency {
+            font-family: 'Courier New', monospace;
+        }
+
+        footer {
+            padding: 20px 40px;
+            border-top: 1px solid #eee;
+            background: #fcfcfc;
+            text-align: center;
+            font-size: 0.85em;
+            color: #999;
+            flex-shrink: 0;
+        }
+
+        footer a {
+            color: #bf600c;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .note {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .success-message {
+            background: #f6fff8;
+            border: 1px solid #d1fad7;
+            color: #1b5e20;
+            padding: 15px;
+            border-radius: 2px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .currency-symbol {
+            color: #bf600c;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            overflow-y: auto;
+            /* Allow modal to scroll if too tall */
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            /* Reduced margin */
+            padding: 30px;
+            border-radius: 4px;
+            max-width: 550px;
+            /* Bit wider */
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+            /* Stop background scroll */
+        }
+
+        .modal-header {
+            border-bottom: 2px solid #bf600c;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.3em;
+            color: #1a1a1a;
+        }
+
+        .close-modal {
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-modal:hover {
+            color: #333;
+        }
+
+        .settings-btn {
+            background: transparent;
+            color: #bf600c;
+            border: 1px solid #bf600c;
+            padding: 8px 15px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .settings-btn:hover {
+            background: #bf600c;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <div class="logo-section">
+                    <img src="logo.png" alt="Hotel Bahía Logo">
+                    <div class="hotel-info">
+                        <h1>Hotel Bahía</h1>
+                        <p>Paguera, Mallorca</p>
+                    </div>
+                </div>
+                <nav class="main-nav">
+                    <a href="quotation.html" class="nav-link active">
+                        <i class="fa-solid fa-calculator"></i> Calculadora
+                    </a>
+                    <a href="history.html" class="nav-link">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Historial
+                    </a>
+                </nav>
+            </div>
+            <div class="header-right">
+                <button class="settings-btn" onclick="openSettings()"
+                    style="background: transparent; color: #555; border: 1px solid #ddd; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                    <i class="fa-solid fa-gear"></i> Configuración
+                </button>
+            </div>
+        </header>
+
+        <div class="content">
+            <!-- LEFT SECTION: INPUT FORM -->
+            <div class="section">
+                <h2><i class="fa-solid fa-clipboard-list"></i> Información de la Reserva</h2>
+
+                <div class="info-box">
+                    <strong>Instrucciones:</strong>
+                    Completa los campos obligatorios marcados con asterisco (*) con la información del cliente y el
+                    precio del sitio web para generar la cotización.
+                </div>
+
+                <form id="quotationForm">
+                    <!-- DATES SECTION -->
+                    <h3><i class="fa-solid fa-calendar-days"></i> Fechas</h3>
+                    <div class="input-group">
+                        <div class="form-group">
+                            <label for="checkIn">Entrada (Check-in) *:</label>
+                            <input type="date" id="checkIn" class="yellow-input" onchange="updateNights()" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="checkOut">Salida (Check-out) *:</label>
+                            <input type="date" id="checkOut" class="yellow-input" onchange="updateNights()" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="nights">Noches:</label>
+                        <input type="number" id="nights" readonly style="background: #e8e8e8;">
+                    </div>
+
+                    <!-- ROOM SECTION -->
+                    <h3><i class="fa-solid fa-bed"></i> Habitaciones</h3>
+                    <div id="roomsList" style="margin-bottom: 15px;">
+                        <div class="room-item"
+                            style="display: grid; grid-template-columns: 1fr 80px 120px 30px; gap: 10px; margin-bottom: 10px; align-items: flex-end;">
+                            <select class="room-type yellow-input" onchange="updateDefaultDiscount()" required>
+                                <option value="">-- Seleccionar --</option>
+                                <option value="Doble">Doble</option>
+                                <option value="Doble Económica">Doble Económica</option>
+                                <option value="Triple">Triple</option>
+                                <option value="Individual">Individual</option>
+                            </select>
+                            <input type="number" class="room-qty yellow-input" min="1" value="1" required
+                                style="width: 100%;" title="Cantidad" onchange="updateDefaultDiscount()">
+                            <input type="number" class="room-price yellow-input" step="0.01" min="0"
+                                placeholder="Precio/noche" required style="width: 100%;" title="Precio por noche"
+                                onchange="updateDefaultDiscount()">
+                            <button type="button" onclick="removeRoom(this)"
+                                style="padding: 8px; background: #dc3545; color: white; border: none; border-radius: 2px; cursor: pointer; font-size: 1.2em;"><i
+                                    class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addRoom()"
+                        style="background: #fdf6ec; color: #bf600c; border: 1px dashed #bf600c; width: 100%; height: 45px; margin-bottom: 25px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fa-solid fa-plus"></i> Añadir otra habitación
+                    </button>
+
+                    <!-- GUESTS SECTION -->
+                    <h3><i class="fa-solid fa-users"></i> Personas</h3>
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label for="adults">Adultos *:</label>
+                            <input type="number" id="adults" min="1" value="2" class="yellow-input" required>
+                            <div class="note">Mayor de 16 años</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="children">Niños *:</label>
+                            <input type="number" id="children" min="0" value="0" class="yellow-input" required>
+                            <div class="note">De 2 a 16 años</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="babies">Bebés *:</label>
+                            <input type="number" id="babies" min="0" value="0" class="yellow-input" required>
+                            <div class="note">Hasta 2 años</div>
+                        </div>
+                    </div>
+
+                    <!-- REGIME SECTION -->
+                    <h3><i class="fa-solid fa-utensils"></i> Régimen</h3>
+                    <div class="form-group">
+                        <label for="regime">Tipo de Régimen *:</label>
+                        <select id="regime" class="yellow-input" required>
+                            <option value="">-- Seleccionar --</option>
+                            <option value="Alojamiento">Alojamiento</option>
+                            <option value="Alojamiento y Desayuno">Alojamiento y Desayuno</option>
+                            <option value="Media Pensión">Media Pensión</option>
+                        </select>
+                    </div>
+
+                    <!-- DISCOUNT SECTION -->
+                    <h3><i class="fa-solid fa-percent"></i> Descuentos</h3>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Loyalty:</label>
+                            <div
+                                style="padding: 10px; background: #fcfcfc; border: 1px solid #eee; border-radius: 2px; color: #2e7d32; font-weight: bold; font-size: 0.9em;">
+                                <i class="fa-solid fa-check-circle"></i> 5% (Fijo)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Web/Mobile:</label>
+                            <div
+                                style="padding: 10px; background: #fcfcfc; border: 1px solid #eee; border-radius: 2px; color: #2e7d32; font-weight: bold; font-size: 0.9em;">
+                                <i class="fa-solid fa-check-circle"></i> 10% (Fijo)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="directDiscount">Descuento Cliente Directo (%) *:</label>
+                        <input type="number" id="directDiscount" step="0.01" min="0" max="100" value="7"
+                            class="yellow-input" required title="Descuento adicional para cliente directo">
+                        <div class="note">* Descuento aplicado sobre el precio web final</div>
+                    </div>
+
+
+
+
+
+
+                    <div class="button-group" style="display: flex; gap: 10px;">
+                        <button type="button" onclick="calculateQuotation()" class="btn btn-primary" style="flex: 2;">
+                            <i class="fa-solid fa-rotate"></i> Calcular
+                        </button>
+                        <button type="button" onclick="clearForm()" class="btn btn-secondary" style="flex: 1;">
+                            <i class="fa-solid fa-trash"></i> Limpiar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- RIGHT SECTION: RESULTS -->
+            <div class="section">
+                <h2><i class="fa-solid fa-receipt"></i> Cotización Calculada</h2>
+
+                <div id="successMessage" class="success-message">
+                    <i class="fa-solid fa-circle-check"></i> Cotización calculada correctamente
+                </div>
+
+                <div id="resultsContainer" style="display: none;">
+                    <!-- SUMMARY SECTION (TOTAL) -->
+                    <div class="result-box highlight">
+                        <div class="result-label"><i class="fa-solid fa-star"></i> Total a Cobrar al Cliente</div>
+                        <div class="result-value"><span class="currency-symbol">€</span> <span
+                                id="resultClientPrice">0.00</span></div>
+                        <div class="note" style="font-size: 1em; color: #a3520a; font-weight: 600; margin-top: 10px;">
+                            <i class="fa-solid fa-check"></i> Sin tasa turística, incluye descuento cliente directo (7%)
+                        </div>
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="button-group">
+                        <button type="button" id="emitButton" onclick="showEmissionFields()" class="btn btn-primary"
+                            style="width: 100%;">
+                            <i class="fa-solid fa-file-export"></i> Emitir Cotización
+                        </button>
+                    </div>
+
+                    <!-- EMISSION SECTION (GUEST INFO) -->
+                    <div id="emissionSection"
+                        style="display: none; margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee; animation: fadeIn 0.4s;">
+                        <h3><i class="fa-solid fa-id-card"></i> Información del Huésped</h3>
+                        <div class="form-group">
+                            <label for="guestName">Nombre del Huésped *:</label>
+                            <input type="text" id="guestName" class="yellow-input" placeholder="Ej: Juan García">
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label for="guestEmail">Email *:</label>
+                                <input type="email" id="guestEmail" class="yellow-input"
+                                    placeholder="correo@ejemplo.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="guestPhone">Teléfono *:</label>
+                                <input type="tel" id="guestPhone" class="yellow-input"
+                                    placeholder="Ej: +34 666 123 456">
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label for="reservationNumber">Número de Reserva:</label>
+                                <input type="text" id="reservationNumber" class="yellow-input"
+                                    placeholder="Ej: RES-2026-001">
+                            </div>
+                            <div class="form-group">
+                                <label for="quotationLanguage">Idioma del Voucher *:</label>
+                                <select id="quotationLanguage" class="yellow-input">
+                                    <option value="es">🇪🇸 Español</option>
+                                    <option value="en">🇬🇧 English</option>
+                                    <option value="de">🇩🇪 Deutsch</option>
+                                    <option value="fr">🇫🇷 Français</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="button" onclick="printQuotation()" class="btn btn-primary"
+                            style="width: 100%; margin-top: 20px; background: #1a1a1a;">
+                            <i class="fa-solid fa-print"></i> Confirmar e Imprimir PDF
+                        </button>
+                    </div>
+
+                    <!-- EXPANDABLE DETAILS -->
+                    <div class="details-toggle" onclick="toggleDetails()" id="detailsToggleBtn">
+                        <i class="fa-solid fa-chevron-down"></i> Ver desglose de precios y comparativa
+                    </div>
+
+                    <div class="details-content" id="detailsContent">
+                        <!-- WEB PRICE SECTION -->
+                        <h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+                            <i class="fa-solid fa-circle-info"></i> Desglose de Cálculo
+                        </h3>
+
+                        <table class="comparison-table" style="margin-bottom: 20px;">
+                            <thead>
+                                <tr>
+                                    <th>Concepto</th>
+                                    <th style="text-align: right;">Importe</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <strong>Precio Web Base (oficial)</strong>
+                                        <div class="note" id="resultWebBaseNote"></div>
+                                    </td>
+                                    <td class="currency" style="text-align: right;">€ <span
+                                            id="resultWebBase">0.00</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Descuento Loyalty (5%)</td>
+                                    <td class="currency" style="text-align: right; color: #dc3545;">-€ <span
+                                            id="resultLoyaltyDiscount">0.00</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Descuento Mobile Web (10%)</td>
+                                    <td class="currency" style="text-align: right; color: #dc3545;">-€ <span
+                                            id="resultMobileDiscount">0.00</span></td>
+                                </tr>
+                                <tr style="background: #fafafa; font-weight: 600;">
+                                    <td>Precio Final Habitación Web</td>
+                                    <td class="currency" style="text-align: right;">€ <span
+                                            id="resultRoomPrice">0.00</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Descuento Cliente Directo (<span id="resultDirectDiscountLabel">7</span>%)</td>
+                                    <td class="currency" style="text-align: right; color: #dc3545;">-€ <span
+                                            id="resultDirectDiscount">0.00</span></td>
+                                </tr>
+                                <tr style="background: #fff8f1; font-weight: 800; border-top: 2px solid #bf600c;">
+                                    <td style="color: #bf600c;">TOTAL A PAGAR (NETO)</td>
+                                    <td class="currency" style="text-align: right; color: #bf600c; font-size: 1.2em;">€
+                                        <span id="resultClientPriceBreakdown">0.00</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Precio Esperado Booking.com</td>
+                                    <td class="currency" style="text-align: right;">€ <span
+                                            id="resultBookingExpected">0.00</span></td>
+                                </tr>
+                                <tr style="font-size: 0.9em; color: #666;">
+                                    <td>
+                                        Tasa Turística (Informativo)
+                                        <div class="note" id="resultTaxNote" style="margin-top: 2px;"></div>
+                                    </td>
+                                    <td class="currency" style="text-align: right;">€ <span
+                                            id="resultTouristTax">0.00</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- BOOKING COMPARISON SECTION -->
+                        <h3 style="margin-top: 25px;"><i class="fa-solid fa-magnifying-glass"></i> Comparativa Booking
+                            (Opcional)</h3>
+
+                        <div class="info-box">
+                            Completa esta sección si quieres comparar con los precios actuales de Booking.com
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bookingPrice">Precio Booking (€ CON TT incluida):</label>
+                            <input type="number" id="bookingPrice" step="0.01" min="0" placeholder="Ej: 938">
+                            <div class="note">* El sistema restará automáticamente la tasa turística</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bookingMobileDiscount">Descuento Mobile Booking (%):</label>
+                            <input type="number" id="bookingMobileDiscount" step="0.01" min="0" max="100" value="10">
+                        </div>
+
+                        <button type="button" onclick="calculateBookingComparison()"><i
+                                class="fa-solid fa-chart-line"></i>
+                            Comparar con Booking</button>
+
+                        <div id="bookingComparisonContainer" style="display: none; margin-top: 20px;">
+                            <h3><i class="fa-solid fa-scale-balanced"></i> Resultados de la Comparativa</h3>
+                            <table class="comparison-table">
+                                <thead>
+                                    <tr>
+                                        <th>Concepto</th>
+                                        <th>Cliente Directo</th>
+                                        <th>Booking</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Precio Base</td>
+                                        <td class="currency">€ <span id="comp-direct-base">0.00</span></td>
+                                        <td class="currency">€ <span id="comp-booking-base">0.00</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dto. Loyalty (5%)</td>
+                                        <td class="currency">-€ <span id="comp-direct-loyalty">0.00</span></td>
+                                        <td class="currency">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dto. Web/Mobile (10%)</td>
+                                        <td class="currency">-€ <span id="comp-direct-mobile">0.00</span></td>
+                                        <td class="currency">-€ <span id="comp-booking-mobile">0.00</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dto. Directo (<span id="comp-direct-pct-label">7</span>%)</td>
+                                        <td class="currency">-€ <span id="comp-direct-discount">0.00</span></td>
+                                        <td class="currency">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Diferencial Booking Paga (<span id="comp-booking-diff-pct">8</span>%)</td>
+                                        <td class="currency">-</td>
+                                        <td class="currency">-€ <span id="comp-booking-8pct">0.00</span></td>
+                                    </tr>
+                                    <tr style="font-weight: bold; background: #f0f0f0;">
+                                        <td>TOTAL FINAL</td>
+                                        <td class="currency">€ <span id="comp-direct-total">0.00</span></td>
+                                        <td class="currency" style="color: #bf600c;">€ <span
+                                                id="comp-booking-total">0.00</span></td>
+                                    </tr>
+                                    <tr style="background: #fff3e0;">
+                                        <td><strong>Diferencia</strong></td>
+                                        <td colspan="2" style="text-align: center; font-weight: bold; color: #bf600c;"
+                                            id="comp-difference">+€ 0.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- End details-content -->
+                </div> <!-- End resultsContainer -->
+
+                <div id="noResultsMessage" style="text-align: center; color: #999; padding: 30px;">
+                    <i class="fa-solid fa-hand-point-right" style="color: #bf600c; margin-right: 10px;"></i>
+                    Completa el formulario y haz clic en "Calcular" para ver los resultados
+                </div>
+            </div> <!-- End Right Section -->
+        </div> <!-- End Content Grid -->
+
+        <footer>
+            <p>Hotel Bahía | Cotizador de Precios v1.0</p>
+            <p style="margin-top: 8px; font-size: 0.9em;">
+                <a href="https://www.hotelbahia.com/" target="_blank"><i class="fa-solid fa-globe"></i> Sitio Web</a> |
+                <a href="https://www.booking.com/hotel/es/bahia-peguera.es.html?aid=304142" target="_blank"><i
+                        class="fa-solid fa-clipboard-list"></i> Booking.com</a>
+            </p>
+            <p style="margin-top: 8px; font-size: 0.9em;">© 2026 Hotel Bahía - Todos los derechos reservados</p>
+        </footer>
+    </div> <!-- End container -->
+
+    <!-- CONFIGURATION MODAL -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-sliders"></i> Configuración de Descuentos</h2>
+                <span class="close-modal" onclick="closeSettings()">&times;</span>
+            </div>
+            <p style="margin-bottom: 20px; font-size: 0.9em; color: #666;">
+                Configura los descuentos por defecto que se aplicarán según el tipo de habitación seleccionada.
+            </p>
+            <div id="settings-form">
+                <div class="settings-group"
+                    style="padding: 15px; background: #fdf6ec; border-radius: 4px; border-left: 4px solid #bf600c; margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 10px; color: #bf600c;">Habitación Doble</h4>
+                    <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Dto. Directo (%):</label>
+                            <input type="number" id="cfg-discount-double" step="0.1" class="yellow-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Dto. Booking (%):</label>
+                            <input type="number" id="cfg-booking-double" step="0.1" class="yellow-input">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-group"
+                    style="padding: 15px; background: #fdf6ec; border-radius: 4px; border-left: 4px solid #bf600c; margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 10px; color: #bf600c;">Habitación Doble Económica</h4>
+                    <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Dto. Directo (%):</label>
+                            <input type="number" id="cfg-discount-double-eco" step="0.1" class="yellow-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Dto. Booking (%):</label>
+                            <input type="number" id="cfg-booking-double-eco" step="0.1" class="yellow-input">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-group"
+                    style="padding: 15px; background: #fdf6ec; border-radius: 4px; border-left: 4px solid #bf600c; margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 10px; color: #bf600c;">Habitación Triple</h4>
+                    <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Dto. Directo (%):</label>
+                            <input type="number" id="cfg-discount-triple" step="0.1" class="yellow-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Dto. Booking (%):</label>
+                            <input type="number" id="cfg-booking-triple" step="0.1" class="yellow-input">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-group"
+                    style="padding: 15px; background: #fdf6ec; border-radius: 4px; border-left: 4px solid #bf600c; margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 10px; color: #bf600c;">Habitación Individual</h4>
+                    <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Dto. Directo (%):</label>
+                            <input type="number" id="cfg-discount-individual" step="0.1" class="yellow-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Dto. Booking (%):</label>
+                            <input type="number" id="cfg-booking-individual" step="0.1" class="yellow-input">
+                        </div>
+                    </div>
+                    <div class="note" style="margin-top: 5px;">* "Dto. Booking" es el diferencial que Booking paga (8%
+                        por defecto)</div>
+                </div>
+
+                <div style="margin-top: 30px; display: flex; gap: 10px;">
+                    <button onclick="saveSettings()" class="btn btn-primary" style="flex: 1;">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeSettings()" style="flex: 1;">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="shared.js"></script>
+    <script>
+        // Tourist tax configuration for 2026
+        const TOURIST_TAX_RATES = {
+            lowSeason: {
+                start: new Date(2025, 10, 1),
+                end: new Date(2026, 3, 30),
+                rate: 0.85
+            },
+            highSeason: {
+                start: new Date(2026, 4, 1),
+                end: new Date(2026, 9, 31)
+            }
+        };
+
+        const HIGH_SEASON_RATE = 3.3;
+        const LOW_SEASON_RATE = 0.85;
+
+        // Calculate number of nights between two dates
+        function calculateNights(checkIn, checkOut) {
+            if (!checkIn || !checkOut) return 0;
+            const checkInDate = new Date(checkIn + 'T00:00:00');
+            const checkOutDate = new Date(checkOut + 'T00:00:00');
+            const timeDiff = checkOutDate - checkInDate;
+            const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            return nights > 0 ? nights : 0;
+        }
+
+        function updateNights() {
+            const checkIn = document.getElementById('checkIn').value;
+            const checkOut = document.getElementById('checkOut').value;
+            console.log('updateNights called - checkIn:', checkIn, 'checkOut:', checkOut);
+            const nights = calculateNights(checkIn, checkOut);
+            console.log('calculated nights:', nights);
+            document.getElementById('nights').value = nights;
+        }
+
+        // Get tourist tax rate based on date
+        function getTouristTaxRate(date) {
+            const checkDate = new Date(date);
+            if (checkDate >= TOURIST_TAX_RATES.lowSeason.start && checkDate <= TOURIST_TAX_RATES.lowSeason.end) {
+                return LOW_SEASON_RATE;
+            } else {
+                return HIGH_SEASON_RATE;
+            }
+        }
+
+        // Calculate tourist tax
+        function calculateTouristTax(nights, adults, checkIn) {
+            const rate = getTouristTaxRate(checkIn);
+            const fullRateNights = Math.min(nights, 8);
+            const halfRateNights = Math.max(nights - 8, 0);
+            const taxPerNight = (fullRateNights * rate) + (halfRateNights * rate * 0.5);
+            return taxPerNight * adults;
+        }
+
+        // formatCurrency removed as it is now in shared.js
+
+
+        function getRooms() {
+            const rooms = [];
+            document.querySelectorAll('.room-item').forEach(item => {
+                const type = item.querySelector('.room-type').value;
+                const qty = parseInt(item.querySelector('.room-qty').value) || 0;
+                const price = parseFloat(item.querySelector('.room-price').value) || 0;
+                if (type && qty > 0 && price > 0) {
+                    rooms.push({ type, qty, price });
+                }
+            });
+            return rooms;
+        }
+
+        function addRoom() {
+            const roomsList = document.getElementById('roomsList');
+            const newRoom = document.createElement('div');
+            newRoom.className = 'room-item';
+            newRoom.style.cssText = 'display: grid; grid-template-columns: 1fr 80px 120px 30px; gap: 10px; margin-bottom: 10px; align-items: flex-end;';
+            newRoom.innerHTML = `
+                <select class="room-type yellow-input" onchange="updateDefaultDiscount()" required>
+                    <option value="">-- Seleccionar --</option>
+                    <option value="Doble">Doble</option>
+                    <option value="Doble Económica">Doble Económica</option>
+                    <option value="Triple">Triple</option>
+                    <option value="Individual">Individual</option>
+                </select>
+                <input type="number" class="room-qty yellow-input" min="1" value="1" required style="width: 100%;" title="Cantidad" onchange="updateDefaultDiscount()">
+                <input type="number" class="room-price yellow-input" step="0.01" min="0" placeholder="Precio/noche" required style="width: 100%;" title="Precio por noche" onchange="updateDefaultDiscount()">
+                <button type="button" onclick="removeRoom(this)" style="padding: 8px; background: #dc3545; color: white; border: none; border-radius: 2px; cursor: pointer; font-size: 1.2em;"><i class="fa-solid fa-xmark"></i></button>
+            `;
+            roomsList.appendChild(newRoom);
+        }
+
+        function removeRoom(button) {
+            const roomsList = document.getElementById('roomsList');
+            if (roomsList.querySelectorAll('.room-item').length > 1) {
+                button.parentElement.remove();
+                updateDefaultDiscount();
+            } else {
+                alert('Debe haber al menos una habitación');
+            }
+        }
+
+        function updateDefaultDiscount() {
+            const items = document.querySelectorAll('.room-item');
+            const settings = loadSettings();
+            let totalWeightedDiscount = 0;
+            let totalWeight = 0;
+            let foundAnyRoomType = false;
+
+            items.forEach(item => {
+                const type = item.querySelector('.room-type').value;
+                if (!type) return;
+
+                const qty = parseFloat(item.querySelector('.room-qty').value) || 0;
+                const price = parseFloat(item.querySelector('.room-price').value) || 0;
+
+                // Weight is based on total revenue for that room type (qty * price)
+                // If price is 0, we still want to give it weight, so we use 1 for calculation
+                const weight = qty * (price > 0 ? price : 1);
+
+                let discount = 0;
+                if (type === 'Doble') discount = settings.double;
+                else if (type === 'Doble Económica') discount = settings.doubleEco;
+                else if (type === 'Triple') discount = settings.triple;
+                else if (type === 'Individual') discount = settings.individual;
+
+                totalWeightedDiscount += (weight * discount);
+                totalWeight += weight;
+                foundAnyRoomType = true;
+            });
+
+            const directDiscountInput = document.getElementById('directDiscount');
+            if (foundAnyRoomType && totalWeight > 0) {
+                const average = totalWeightedDiscount / totalWeight;
+                // Round to 1 decimal place. Use string to avoid unnecessary decimals like .00000004
+                directDiscountInput.value = parseFloat(average.toFixed(1));
+            }
+        }
+
+        // SETTINGS LOGIC
+        function loadSettings() {
+            const defaults = {
+                double: 7,
+                doubleEco: 7,
+                triple: 0,
+                individual: 0,
+                bookingDouble: 8,
+                bookingDoubleEco: 8,
+                bookingTriple: 8,
+                bookingIndividual: 0
+            };
+            const saved = localStorage.getItem('hotelBahiaSettings');
+            return saved ? JSON.parse(saved) : defaults;
+        }
+
+        function openSettings() {
+            const settings = loadSettings();
+            document.getElementById('cfg-discount-double').value = settings.double;
+            document.getElementById('cfg-discount-double-eco').value = settings.doubleEco;
+            document.getElementById('cfg-discount-triple').value = settings.triple;
+            document.getElementById('cfg-discount-individual').value = settings.individual;
+            document.getElementById('cfg-booking-double').value = settings.bookingDouble;
+            document.getElementById('cfg-booking-double-eco').value = settings.bookingDoubleEco;
+            document.getElementById('cfg-booking-triple').value = settings.bookingTriple;
+            document.getElementById('cfg-booking-individual').value = settings.bookingIndividual;
+
+            document.getElementById('settingsModal').style.display = 'block';
+            document.body.classList.add('modal-open');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
+
+        function saveSettings() {
+            const settings = {
+                double: parseFloat(document.getElementById('cfg-discount-double').value) || 0,
+                doubleEco: parseFloat(document.getElementById('cfg-discount-double-eco').value) || 0,
+                triple: parseFloat(document.getElementById('cfg-discount-triple').value) || 0,
+                individual: parseFloat(document.getElementById('cfg-discount-individual').value) || 0,
+                bookingDouble: parseFloat(document.getElementById('cfg-booking-double').value) || 0,
+                bookingDoubleEco: parseFloat(document.getElementById('cfg-booking-double-eco').value) || 0,
+                bookingTriple: parseFloat(document.getElementById('cfg-booking-triple').value) || 0,
+                bookingIndividual: parseFloat(document.getElementById('cfg-booking-individual').value) || 0
+            };
+            localStorage.setItem('hotelBahiaSettings', JSON.stringify(settings));
+            alert('Configuración guardada correctamente.');
+            closeSettings();
+            updateDefaultDiscount();
+        }
+
+        // Close modal if clicking outside
+        window.onclick = function (event) {
+            const modal = document.getElementById('settingsModal');
+            if (event.target == modal) {
+                closeSettings();
+            }
+        }
+
+        function validateForm() {
+            const checkIn = document.getElementById('checkIn').value;
+            const checkOut = document.getElementById('checkOut').value;
+            const regime = document.getElementById('regime').value;
+            const rooms = getRooms();
+
+            if (!checkIn || !checkOut || rooms.length === 0 || !regime) {
+                alert('Por favor, completa todos los campos requeridos (*)');
+                return false;
+            }
+
+            if (rooms.some(r => !r.type || r.qty < 1 || r.price <= 0)) {
+                alert('Por favor, completa todas las habitaciones con precios válidos');
+                return false;
+            }
+
+            const nights = parseInt(document.getElementById('nights').value);
+            if (nights <= 0) {
+                alert('La fecha de salida debe ser posterior a la de entrada');
+                return false;
+            }
+
+            return true;
+        }
+
+        function calculateQuotation() {
+            if (!validateForm()) return;
+
+            const checkIn = document.getElementById('checkIn').value;
+            const checkOut = document.getElementById('checkOut').value;
+            const nights = parseInt(document.getElementById('nights').value);
+            const rooms = getRooms();
+            const adults = parseInt(document.getElementById('adults').value);
+
+            // Calculate total price from individual room prices
+            let webPriceTotal = 0;
+            let roomsDesc = [];
+            rooms.forEach(r => {
+                const roomTotal = r.price * r.qty * nights;
+                webPriceTotal += roomTotal;
+                roomsDesc.push(`${r.qty}×${r.type} (€${r.price}/noche)`);
+            });
+
+            const webPricePerNight = webPriceTotal / nights;
+            const webBaseTotal = webPriceTotal;
+            const loyaltyDiscount = 0.05; // Fixed Loyalty 5%
+            const mobileDiscount = 0.10; // Fixed Web/Mobile 10%
+            const directDiscountPercent = (parseFloat(document.getElementById('directDiscount').value) || 0) / 100;
+
+            const loyaltyDiscountAmount = webBaseTotal * loyaltyDiscount;
+            const baseAfterLoyalty = webBaseTotal - loyaltyDiscountAmount;
+            const mobileDiscountAmount = baseAfterLoyalty * mobileDiscount;
+            const roomPrice = baseAfterLoyalty - mobileDiscountAmount;
+            const touristTax = calculateTouristTax(nights, adults, checkIn);
+
+            const directDiscountAmount = roomPrice * directDiscountPercent;
+            const clientPrice = roomPrice - directDiscountAmount;
+
+            // Expected Booking price is usually roughly related to the official room price (webPrice), 
+            // not to our variable aggressive direct discount.
+            const bookingExpected = roomPrice * 1.03;
+
+            const checkInDate = new Date(checkIn);
+            const season = getTouristTaxRate(checkIn) === LOW_SEASON_RATE ? 'Baja' : 'Alta';
+
+            document.getElementById('resultWebBase').textContent = formatCurrency(webBaseTotal);
+            document.getElementById('resultWebBaseNote').textContent = `${nights} noches | ${roomsDesc.join(', ')}`;
+            document.getElementById('resultLoyaltyDiscount').textContent = formatCurrency(loyaltyDiscountAmount);
+            document.getElementById('resultMobileDiscount').textContent = formatCurrency(mobileDiscountAmount);
+            document.getElementById('resultRoomPrice').textContent = formatCurrency(roomPrice);
+            document.getElementById('resultDirectDiscount').textContent = formatCurrency(directDiscountAmount);
+            document.getElementById('resultDirectDiscountLabel').textContent = (directDiscountPercent * 100).toFixed(0);
+            document.getElementById('resultClientPriceBreakdown').textContent = formatCurrency(clientPrice);
+            document.getElementById('resultTouristTax').textContent = formatCurrency(touristTax);
+            document.getElementById('resultTaxNote').textContent = `${nights} noches, ${adults} adulto(s) - Temporada ${season}`;
+            document.getElementById('resultClientPrice').textContent = formatCurrency(clientPrice);
+            document.getElementById('resultBookingExpected').textContent = formatCurrency(bookingExpected);
+
+            document.getElementById('resultsContainer').style.display = 'block';
+            document.getElementById('emissionSection').style.display = 'none'; // Reset emission section
+            document.getElementById('emitButton').style.display = 'block'; // Ensure emit button is visible
+            document.getElementById('detailsContent').style.display = 'none'; // Hide details on each new calculation
+            document.getElementById('detailsToggleBtn').innerHTML = '<i class="fa-solid fa-chevron-down"></i> Ver desglose de precios y comparativa';
+
+            document.getElementById('noResultsMessage').style.display = 'none';
+            document.getElementById('successMessage').classList.add('show');
+            setTimeout(() => document.getElementById('successMessage').classList.remove('show'), 3000);
+
+            window.currentQuotation = {
+                nights,
+                webPrice: webPricePerNight,
+                adults,
+                children: parseInt(document.getElementById('children').value) || 0,
+                babies: parseInt(document.getElementById('babies').value) || 0,
+                rooms,
+                loyaltyDiscountAmount,
+                mobileDiscountAmount,
+                directDiscountAmount,
+                directDiscountPercent: directDiscountPercent * 100,
+                webBaseTotal,
+                roomPrice,
+                touristTax,
+                clientPrice,
+                bookingExpected,
+                checkIn,
+                checkOut,
+                roomType: rooms.map(r => `${r.qty}×${r.type}`).join(', '),
+                regime: document.getElementById('regime').value
+            };
+        }
+
+        function showEmissionFields() {
+            document.getElementById('emissionSection').style.display = 'block';
+            document.getElementById('emissionSection').scrollIntoView({ behavior: 'smooth' });
+            // Hide the emit button after clicking
+            document.getElementById('emitButton').style.display = 'none';
+        }
+
+        function calculateBookingComparison() {
+            if (!window.currentQuotation) {
+                alert('Por favor, calcula la cotización primero');
+                return;
+            }
+
+            const bookingPriceWithTax = parseFloat(document.getElementById('bookingPrice').value);
+            const bookingMobileDiscount = parseFloat(document.getElementById('bookingMobileDiscount').value) / 100;
+
+            if (!bookingPriceWithTax || bookingPriceWithTax < 0) {
+                alert('Por favor, ingresa el precio de Booking válido');
+                return;
+            }
+
+            const q = window.currentQuotation;
+            const bookingPriceWithoutTax = bookingPriceWithTax - q.touristTax;
+            const bookingBaseTotal = bookingPriceWithoutTax;
+            const bookingDiscountAmount = bookingBaseTotal * bookingMobileDiscount;
+            const bookingRoomPrice = bookingBaseTotal - bookingDiscountAmount;
+
+            const settings = loadSettings();
+            let totalDiffAmount = 0;
+
+            q.rooms.forEach(r => {
+                const roomPortion = (r.price * r.qty * q.nights) / q.webBaseTotal;
+                let diffPerc = 0;
+                if (r.type === 'Doble') diffPerc = settings.bookingDouble;
+                else if (r.type === 'Doble Económica') diffPerc = settings.bookingDoubleEco;
+                else if (r.type === 'Triple') diffPerc = settings.bookingTriple;
+                else if (r.type === 'Individual') diffPerc = settings.bookingIndividual;
+
+                totalDiffAmount += (bookingRoomPrice * roomPortion) * (diffPerc / 100);
+            });
+
+            const bookingEightPercent = totalDiffAmount;
+            const bookingFinalPrice = bookingRoomPrice - bookingEightPercent;
+
+            // Difference = (Booking - Direct)
+            // If positive, it means Direct is cheaper (Ahorro)
+            const difference = bookingFinalPrice - q.clientPrice;
+
+            document.getElementById('comp-direct-base').textContent = formatCurrency(q.webBaseTotal);
+            document.getElementById('comp-booking-base').textContent = formatCurrency(bookingBaseTotal);
+
+            document.getElementById('comp-direct-loyalty').textContent = formatCurrency(q.loyaltyDiscountAmount);
+            document.getElementById('comp-direct-mobile').textContent = formatCurrency(q.mobileDiscountAmount);
+            document.getElementById('comp-booking-mobile').textContent = formatCurrency(bookingDiscountAmount);
+
+            document.getElementById('comp-direct-pct-label').textContent = q.directDiscountPercent.toFixed(0);
+            document.getElementById('comp-direct-discount').textContent = formatCurrency(q.directDiscountAmount);
+
+            const effectiveDiffPct = bookingRoomPrice > 0 ? (bookingEightPercent / bookingRoomPrice) * 100 : 0;
+            document.getElementById('comp-booking-diff-pct').textContent = effectiveDiffPct.toFixed(1).replace('.0', '');
+            document.getElementById('comp-booking-8pct').textContent = formatCurrency(bookingEightPercent);
+            document.getElementById('comp-direct-total').textContent = formatCurrency(q.clientPrice);
+            document.getElementById('comp-booking-total').textContent = formatCurrency(bookingFinalPrice);
+
+            const diffText = difference >= 0
+                ? `Ahorro de € ${formatCurrency(difference)} al reservar directo`
+                : `Diferencia de € ${formatCurrency(Math.abs(difference))} a favor de Booking`;
+            document.getElementById('comp-difference').textContent = diffText;
+
+            document.getElementById('bookingComparisonContainer').style.display = 'block';
+        }
+
+
+
+        function printQuotation() {
+            // Validate Guest Info before printing
+            const guestName = document.getElementById('guestName').value;
+            const guestEmail = document.getElementById('guestEmail').value;
+            const guestPhone = document.getElementById('guestPhone').value;
+            const lang = document.getElementById('quotationLanguage').value;
+
+            if (!guestName || !guestEmail || !guestPhone) {
+                alert('Por favor, completa los campos obligatorios del huésped (*) antes de imprimir');
+                return;
+            }
+
+            // Update current quotation with guest info
+            window.currentQuotation.guestName = guestName;
+            window.currentQuotation.guestEmail = guestEmail;
+            window.currentQuotation.guestPhone = guestPhone;
+            window.currentQuotation.reservationNumber = document.getElementById('reservationNumber').value;
+
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yy = String(today.getFullYear()).slice(-2);
+            const random = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+            const quotationId = `QUOT-${dd}${mm}${yy}-${random}`;
+
+            window.currentQuotation.id = quotationId;
+            window.currentQuotation.dateEmitted = today.toISOString();
+            window.currentQuotation.language = lang;
+
+            // Save to history
+            saveToHistory(window.currentQuotation);
+
+            const printContent = generatePrintHTML(window.currentQuotation, lang);
+
+            const newWindow = window.open('', '_blank');
+            newWindow.document.open();
+            newWindow.document.write(printContent);
+            newWindow.document.close();
+
+            setTimeout(() => {
+                newWindow.print();
+            }, 500);
+        }
+
+        function saveToHistory(q) {
+            const saved = localStorage.getItem('hotelBahiaQuotationHistory');
+            const history = saved ? JSON.parse(saved) : [];
+
+            const historyItem = {
+                ...q,
+                totalPrice: q.clientPrice,
+                roomsSummary: q.roomType
+            };
+
+            history.push(historyItem);
+            if (history.length > 100) history.shift();
+            localStorage.setItem('hotelBahiaQuotationHistory', JSON.stringify(history));
+        }
+
+        function toggleDetails() {
+            const content = document.getElementById('detailsContent');
+            const btn = document.getElementById('detailsToggleBtn');
+            if (content.style.display === 'none' || content.style.display === '') {
+                content.style.display = 'block';
+                btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Ocultar desglose';
+                content.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                content.style.display = 'none';
+                btn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> Ver desglose de precios y comparativa';
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('quotationForm').reset();
+            document.getElementById('nights').value = '';
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('emissionSection').style.display = 'none';
+            document.getElementById('emitButton').style.display = 'block';
+            document.getElementById('detailsContent').style.display = 'none';
+            document.getElementById('noResultsMessage').style.display = 'block';
+            document.getElementById('bookingComparisonContainer').style.display = 'none';
+
+            // Clear guest info fields manually since they are outside the main form
+            document.getElementById('guestName').value = '';
+            document.getElementById('guestEmail').value = '';
+            document.getElementById('guestPhone').value = '';
+            document.getElementById('reservationNumber').value = '';
+            document.getElementById('quotationLanguage').value = 'es';
+
+            document.getElementById('mobileDiscount').value = '10'; // Keep hidden or remove if not in DOM anymore
+            document.getElementById('directDiscount').value = '7';
+            document.getElementById('bookingMobileDiscount').value = '10';
+            document.getElementById('adults').value = '2';
+            document.getElementById('children').value = '0';
+            document.getElementById('babies').value = '0';
+            document.getElementById('guestName').value = '';
+            document.getElementById('guestEmail').value = '';
+            document.getElementById('guestPhone').value = '';
+            document.getElementById('reservationNumber').value = '';
+            document.getElementById('quotationLanguage').value = 'es';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const formatDate = (date) => date.toISOString().split('T')[0];
+            document.getElementById('checkIn').value = formatDate(today);
+            document.getElementById('checkOut').value = formatDate(tomorrow);
+        });
+
+        document.getElementById('quotationForm').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                calculateQuotation();
+            }
+        });
+    </script>
+
+    <style>
+        @media print {
+            body {
+                background: white;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            button,
+            .button-group,
+            .info-box {
+                display: none;
+            }
+
+            .form-group,
+            label,
+            input[type="date"],
+            input[type="number"],
+            select {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</body>
+
+</html>
