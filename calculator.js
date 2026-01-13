@@ -278,6 +278,11 @@ function calculateQuotation() {
     document.getElementById('resultsContainer').style.display = 'block';
     document.getElementById('noResultsMessage').style.display = 'none';
 
+    // Auto-scroll to results on mobile
+    if (window.innerWidth <= 600) {
+        document.getElementById('resultsContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
     // Save state for printing/comparing
     window.currentQuotation = {
         nights, adults, rooms, webBaseTotal, roomPrice, clientPrice, touristTax,
