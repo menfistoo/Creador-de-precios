@@ -340,17 +340,29 @@ function calculateBookingComparison() {
 
     // 2. Get and validate Booking price input
     const bookingPriceInput = parseFloat(document.getElementById('bookingPrice').value);
-    if (!bookingPriceInput || bookingPriceInput <= 0) {
-        alert('Por favor, introduce un precio válido de Booking');
+    if (isNaN(bookingPriceInput) || bookingPriceInput <= 0) {
+        alert('Por favor, introduce un precio válido de Booking (mayor que 0)');
         return;
     }
 
-    // 3. Get mobile discount percentage
-    const bookingMobileDiscountPct = (parseFloat(document.getElementById('bookingMobileDiscount').value) || 10) / 100;
+    // 2b. Validate booking price is greater than tourist tax (makes sense logically)
+    const q = window.currentQuotation;
+    if (bookingPriceInput <= q.touristTax) {
+        alert('El precio de Booking debe ser mayor que la tasa turística (' + formatCurrency(q.touristTax) + ')');
+        return;
+    }
+
+    // 3. Get mobile discount percentage (clamp to 0-100%)
+    let bookingMobileDiscountRaw = parseFloat(document.getElementById('bookingMobileDiscount').value);
+    if (isNaN(bookingMobileDiscountRaw)) {
+        bookingMobileDiscountRaw = 10; // Default to 10%
+    }
+    bookingMobileDiscountRaw = Math.max(0, Math.min(100, bookingMobileDiscountRaw));
+    const bookingMobileDiscountPct = bookingMobileDiscountRaw / 100;
 
     // 4. Get booking differential percentage from settings based on room type
     const settings = loadSettings();
-    const rooms = window.currentQuotation.rooms || getRooms();
+    const rooms = q.rooms || getRooms();
 
     // Calculate weighted average booking differential based on room types
     let totalWeightedDiff = 0;
@@ -368,7 +380,6 @@ function calculateBookingComparison() {
     const bookingDiffPct = totalWeight > 0 ? (totalWeightedDiff / totalWeight) / 100 : 0.08;
 
     // 5. Subtract tourist tax from Booking price to get base
-    const q = window.currentQuotation;
     const bookingBase = bookingPriceInput - q.touristTax;
 
     // 6. Calculate Booking breakdown
