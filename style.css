@@ -299,7 +299,35 @@ select:focus {
     font-size: 2em;
 }
 
-/* FOOTER */
+/* BOOKING COMPARISON CARD */
+.booking-card {
+    background: #f0f4fa;
+    border: 1px solid #c9d8eb;
+    border-left: 8px solid #003580;
+    /* Booking.com Blue */
+    padding: 15px;
+    border-radius: var(--radius);
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.booking-card .label {
+    color: #003580;
+    font-weight: 700;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.booking-card .value {
+    color: #003580;
+    font-size: 1.4em;
+    font-weight: 800;
+}
+
 footer {
     padding: 20px;
     border-top: 1px solid var(--border-color);

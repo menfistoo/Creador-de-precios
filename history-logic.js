@@ -75,12 +75,14 @@ function renderHistory(items) {
  * Filtering logic
  */
 function filterHistory() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
-    const dateFrom = document.getElementById('filterDateFrom').value;
-    const dateTo = document.getElementById('filterDateTo').value;
-    const roomType = document.getElementById('filterRoomType').value;
-    const lang = document.getElementById('filterLanguage').value;
-    const maxPrice = parseFloat(document.getElementById('filterMaxPrice').value);
+    const getValue = (id) => document.getElementById(id) ? document.getElementById(id).value : '';
+
+    const query = getValue('searchInput').toLowerCase();
+    const dateFrom = getValue('filterDateFrom');
+    const dateTo = getValue('filterDateTo');
+    const roomType = getValue('filterRoomType');
+    const lang = getValue('filterLanguage');
+    const maxPrice = parseFloat(getValue('filterMaxPrice'));
 
     const filtered = fullHistory.filter(item => {
         const matchesQuery = !query ||
@@ -103,12 +105,11 @@ function filterHistory() {
 }
 
 function clearFilters() {
-    document.getElementById('searchInput').value = '';
-    document.getElementById('filterDateFrom').value = '';
-    document.getElementById('filterDateTo').value = '';
-    document.getElementById('filterRoomType').value = '';
-    document.getElementById('filterLanguage').value = '';
-    document.getElementById('filterMaxPrice').value = '';
+    const ids = ['searchInput', 'filterDateFrom', 'filterDateTo', 'filterRoomType', 'filterLanguage', 'filterMaxPrice'];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
     renderHistory(fullHistory);
 }
 

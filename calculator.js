@@ -246,7 +246,8 @@ function calculateQuotation() {
 
     // Tourist Tax calculation
     const checkInDate = document.getElementById('checkIn').value;
-    const taxRate = getTouristTaxRate(checkInDate);
+    const taxInfo = getTouristTaxInfo(checkInDate);
+    const taxRate = taxInfo.rate;
     const fullRateNights = Math.min(nights, 8);
     const halfRateNights = Math.max(nights - 8, 0);
     const touristTax = ((fullRateNights * taxRate) + (halfRateNights * taxRate * 0.5)) * adults;
@@ -261,6 +262,14 @@ function calculateQuotation() {
     document.getElementById('resultDirectDiscountLabel').textContent = (directDiscountPct * 100).toFixed(0);
     document.getElementById('resultClientPriceBreakdown').textContent = formatCurrency(clientPrice);
     document.getElementById('resultTouristTax').textContent = formatCurrency(touristTax);
+
+    // Detailed Tax Note
+    let taxNoteText = `${taxInfo.season} / ${adults} ad.`;
+    if (nights > 8) {
+        taxNoteText += ` / +8n dto. 50%`;
+    }
+    document.getElementById('resultTaxNote').textContent = `(${taxNoteText})`;
+
     document.getElementById('resultClientPrice').textContent = formatCurrency(clientPrice);
 
     // Expected booking
@@ -272,7 +281,9 @@ function calculateQuotation() {
     // Save state for printing/comparing
     window.currentQuotation = {
         nights, adults, rooms, webBaseTotal, roomPrice, clientPrice, touristTax,
-        loyaltyAmount, mobileAmount, directAmount,
+        loyaltyDiscountAmount: loyaltyAmount,
+        mobileDiscountAmount: mobileAmount,
+        directDiscountAmount: directAmount,
         directDiscountPercent: directDiscountPct * 100,
         checkIn: checkInDate,
         checkOut: document.getElementById('checkOut').value,
@@ -283,11 +294,15 @@ function calculateQuotation() {
     };
 }
 
-function getTouristTaxRate(dateStr) {
+function getTouristTaxInfo(dateStr) {
     const date = new Date(dateStr);
     const lowStart = TOURIST_TAX_RATES.lowSeason.start;
     const lowEnd = TOURIST_TAX_RATES.lowSeason.end;
-    return (date >= lowStart && date <= lowEnd) ? LOW_SEASON_RATE : HIGH_SEASON_RATE;
+    const isLow = (date >= lowStart && date <= lowEnd);
+    return {
+        rate: isLow ? LOW_SEASON_RATE : HIGH_SEASON_RATE,
+        season: isLow ? 'Temp. Baja' : 'Temp. Alta'
+    };
 }
 
 function showEmissionFields() {
@@ -319,10 +334,14 @@ function printQuotation() {
 
     const q = window.currentQuotation;
     q.guestName = guestName;
-    q.guestEmail = document.getElementById('guestEmail').value;
-    q.guestPhone = document.getElementById('guestPhone').value;
-    q.reservationNumber = document.getElementById('reservationNumber').value;
-    q.language = document.getElementById('quotationLanguage').value;
+
+    // Safely get optional fields
+    const getValue = (id) => document.getElementById(id) ? document.getElementById(id).value : '';
+
+    q.guestEmail = getValue('guestEmail');
+    q.guestPhone = getValue('guestPhone');
+    q.reservationNumber = getValue('reservationNumber');
+    q.language = getValue('quotationLanguage') || 'es';
 
     // Identifiers
     const now = new Date();
