@@ -159,6 +159,19 @@ function formatCurrency(val) {
     return parseFloat(val).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+/**
+ * Formats a date string or Date object to European format (DD/MM/YYYY)
+ * @param {string|Date} dateInput - Date in ISO format (YYYY-MM-DD) or Date object
+ * @returns {string} Date formatted as DD/MM/YYYY
+ */
+function formatDateEuropean(dateInput) {
+    const date = typeof dateInput === 'string' ? new Date(dateInput + 'T00:00:00') : dateInput;
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
 // Get translation
 function t(lang, key) {
     if (!translations[lang]) lang = 'es';
