@@ -387,9 +387,29 @@ function calculateQuotation() {
 
     document.getElementById('resultClientPrice').textContent = formatCurrency(clientPrice);
 
-    // Expected booking base price (afterLoyalty is ~3% cheaper than Booking base)
-    const bookingExpectedBase = afterLoyalty / 0.97;
-    document.getElementById('resultBookingExpected').textContent = formatCurrency(bookingExpectedBase);
+    // Expected Booking PVP calculation
+    // 1. Booking base = afterLoyalty + 3%
+    const bookingExpectedBase = afterLoyalty * 1.03;
+    // 2. Get booking paga % from settings (weighted by room type)
+    const settings = loadSettings();
+    let totalWeightedDiff = 0;
+    let totalWeight = 0;
+    rooms.forEach(r => {
+        const weight = r.qty * r.price;
+        let diff = 0;
+        if (r.type === 'Doble') diff = settings.bookingDouble;
+        else if (r.type === 'Doble Económica') diff = settings.bookingDoubleEco;
+        else if (r.type === 'Triple') diff = settings.bookingTriple;
+        else if (r.type === 'Individual') diff = settings.bookingIndividual;
+        totalWeightedDiff += (weight * diff);
+        totalWeight += weight;
+    });
+    const bookingPagaPct = totalWeight > 0 ? (totalWeightedDiff / totalWeight) / 100 : 0.08;
+    // 3. Apply discounts from base (mobile 10% + booking paga %)
+    const bookingMobileAmount = bookingExpectedBase * 0.10;
+    const bookingPagaAmount = bookingExpectedBase * bookingPagaPct;
+    const bookingExpectedPVP = bookingExpectedBase - bookingMobileAmount - bookingPagaAmount;
+    document.getElementById('resultBookingExpected').textContent = formatCurrency(bookingExpectedPVP);
 
     document.getElementById('resultsContainer').style.display = 'block';
     document.getElementById('noResultsMessage').style.display = 'none';
