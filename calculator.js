@@ -165,7 +165,8 @@ function loadSettings() {
         bookingDouble: 8,
         bookingDoubleEco: 8,
         bookingTriple: 8,
-        bookingIndividual: 0
+        bookingIndividual: 0,
+        bookingBaseCommission: 17
     };
     const saved = localStorage.getItem('hotelBahiaSettings');
     return saved ? JSON.parse(saved) : defaults;
@@ -181,7 +182,8 @@ function openSettings() {
         'cfg-booking-double': settings.bookingDouble,
         'cfg-booking-double-eco': settings.bookingDoubleEco,
         'cfg-booking-triple': settings.bookingTriple,
-        'cfg-booking-individual': settings.bookingIndividual
+        'cfg-booking-individual': settings.bookingIndividual,
+        'cfg-booking-commission': settings.bookingBaseCommission
     };
 
     for (const [id, value] of Object.entries(fields)) {
@@ -217,7 +219,8 @@ function saveSettings() {
         bookingDouble: getValue('cfg-booking-double', current.bookingDouble),
         bookingDoubleEco: getValue('cfg-booking-double-eco', current.bookingDoubleEco),
         bookingTriple: getValue('cfg-booking-triple', current.bookingTriple),
-        bookingIndividual: getValue('cfg-booking-individual', current.bookingIndividual)
+        bookingIndividual: getValue('cfg-booking-individual', current.bookingIndividual),
+        bookingBaseCommission: getValue('cfg-booking-commission', current.bookingBaseCommission)
     };
 
     localStorage.setItem('hotelBahiaSettings', JSON.stringify(settings));
@@ -440,6 +443,21 @@ function toggleDetails() {
 }
 
 /**
+ * Toggle booking comparison results visibility
+ */
+function toggleBookingComparison() {
+    const content = document.getElementById('bookingComparisonResults');
+    const btn = document.getElementById('bookingComparisonToggle');
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        btn.innerHTML = '<i class="fa-solid fa-chevron-up" style="color: #003580;"></i> <span style="color: #003580;">Ocultar Comparativa</span>';
+    } else {
+        content.style.display = 'none';
+        btn.innerHTML = '<i class="fa-solid fa-chevron-down" style="color: #003580;"></i> <span style="color: #003580;">Ver Comparativa</span>';
+    }
+}
+
+/**
  * Booking comparison calculation
  * Compares direct booking price with Booking.com price
  */
@@ -494,23 +512,47 @@ function calculateBookingComparison() {
     // 5. Subtract tourist tax from Booking price to get base
     const bookingBase = bookingPriceInput - q.touristTax;
 
-    // 6. Calculate Booking breakdown
+    // 6. Calculate Booking breakdown with correct commission logic
     const bookingMobileDiscount = bookingBase * bookingMobileDiscountPct;
     const bookingAfterMobile = bookingBase - bookingMobileDiscount;
-    const bookingDifferential = bookingAfterMobile * bookingDiffPct;
-    const bookingTotal = bookingAfterMobile - bookingDifferential;
+
+    // Commission calculation: effectiveCommission = baseCommission - bookingPays
+    const bookingBaseCommission = (settings.bookingBaseCommission || 17) / 100;
+    const effectiveCommission = Math.max(0, bookingBaseCommission - bookingDiffPct);
+
+    // Booking Paga: amount that Booking contributes as a discount to client price
+    const bookingPagaAmount = bookingAfterMobile * bookingDiffPct;
+    const bookingClientPVP = bookingAfterMobile - bookingPagaAmount; // What client actually pays (lowest PVP)
+
+    // Full commission is calculated on original price (before Booking Paga discount)
+    const fullCommissionAmount = bookingAfterMobile * bookingBaseCommission;
+
+    // Hotel net revenue: correct formula using effective commission
+    // hotelNetRevenue = bookingAfterMobile - (bookingAfterMobile × effectiveCommission)
+    const effectiveCommissionAmount = bookingAfterMobile * effectiveCommission;
+    const hotelNetRevenue = bookingAfterMobile - effectiveCommissionAmount;
+
+    // bookingTotal represents what client pays (for display), hotelNetRevenue is what hotel receives
+    const bookingTotal = bookingClientPVP; // Client pays after Booking Paga discount
 
     // 7. Get Direct values from currentQuotation
     const directBase = q.webBaseTotal;
     const directLoyalty = q.loyaltyDiscountAmount;
     const directMobile = q.mobileDiscountAmount;
     const directDiscount = q.directDiscountAmount;
-    const directTotal = q.clientPrice;
+    const directTotal = q.clientPrice; // This is also hotel net revenue for direct booking
 
-    // 8. Calculate difference (positive = Direct is cheaper/better for hotel)
-    const difference = bookingTotal - directTotal;
+    // 8. Calculate percentage differential: ((directNet - bookingNet) / bookingNet) × 100
+    const directNetRevenue = directTotal; // For direct booking, client price = hotel net revenue
+    const bookingNetRevenue = hotelNetRevenue;
+    const percentageGain = bookingNetRevenue > 0
+        ? ((directNetRevenue - bookingNetRevenue) / bookingNetRevenue) * 100
+        : 0;
 
-    // 9. Update all DOM elements with results
+    // 9. Calculate difference (positive = Direct generates more hotel revenue)
+    const difference = directNetRevenue - bookingNetRevenue;
+
+    // 10. Update all DOM elements with results
     document.getElementById('comp-direct-base').textContent = formatCurrency(directBase);
     document.getElementById('comp-direct-loyalty').textContent = formatCurrency(directLoyalty);
     document.getElementById('comp-direct-mobile').textContent = formatCurrency(directMobile);
@@ -520,51 +562,88 @@ function calculateBookingComparison() {
 
     document.getElementById('comp-booking-base').textContent = formatCurrency(bookingBase);
     document.getElementById('comp-booking-mobile').textContent = formatCurrency(bookingMobileDiscount);
-    document.getElementById('comp-booking-8pct').textContent = formatCurrency(bookingDifferential);
-    document.getElementById('comp-booking-8pct-label').textContent = (bookingDiffPct * 100).toFixed(0);
-    document.getElementById('comp-booking-total').textContent = formatCurrency(bookingTotal);
 
-    // Update difference display
+    // Booking Paga row
+    document.getElementById('comp-booking-paga').textContent = formatCurrency(bookingPagaAmount);
+    document.getElementById('comp-booking-paga-label').textContent = (bookingDiffPct * 100).toFixed(0);
+
+    // PVP A CLIENTE row - what client pays in each channel
+    document.getElementById('comp-direct-pvp').textContent = formatCurrency(directTotal);
+    document.getElementById('comp-booking-pvp').textContent = formatCurrency(bookingClientPVP);
+
+    // Commission row - show full base commission percentage and amount
+    document.getElementById('comp-booking-commission').textContent = formatCurrency(fullCommissionAmount);
+    document.getElementById('comp-booking-commission-label').textContent = (bookingBaseCommission * 100).toFixed(0);
+
+    // Net hotel revenue row
+    document.getElementById('comp-booking-total').textContent = formatCurrency(hotelNetRevenue);
+    document.getElementById('comp-direct-total').textContent = formatCurrency(directTotal);
+
+    // Update difference display with percentage advantage
     document.getElementById('comp-difference').textContent = formatCurrency(Math.abs(difference));
 
     const differenceBox = document.getElementById('comparisonDifferenceBox');
     const differenceNote = document.getElementById('comp-difference-note');
     const differenceLabel = document.getElementById('comp-difference-label');
 
+    // Format percentage with sign
+    const percentageSign = percentageGain >= 0 ? '+' : '';
+    const percentageDisplay = percentageSign + percentageGain.toFixed(1) + '%';
+
     if (difference >= 0) {
-        // Direct is cheaper or equal - good for hotel
+        // Direct is better or equal - good for hotel (green)
         differenceBox.style.background = '#e8f5e9';
         differenceBox.style.borderColor = '#4caf50';
-        differenceLabel.textContent = 'Ahorro con Cliente Directo';
+        differenceLabel.textContent = 'Ventaja Cliente Directo';
         differenceLabel.style.color = '#2e7d32';
-        differenceNote.textContent = difference > 0 ? 'El hotel gana más con reserva directa' : 'Mismo resultado';
+        if (difference > 0) {
+            differenceNote.innerHTML = '<span style="font-size: 1.4em; font-weight: 800;">' + percentageDisplay + '</span> más ingreso neto con reserva directa';
+        } else {
+            differenceNote.textContent = 'Mismo resultado en ambos canales';
+        }
         differenceNote.style.color = '#2e7d32';
     } else {
-        // Booking is cheaper - warning
+        // Booking is better - warning (orange)
         differenceBox.style.background = '#fff3e0';
         differenceBox.style.borderColor = '#ff9800';
         differenceLabel.textContent = 'Diferencia a favor de Booking';
         differenceLabel.style.color = '#e65100';
-        differenceNote.textContent = 'Booking genera más ingreso neto';
+        differenceNote.innerHTML = '<span style="font-size: 1.4em; font-weight: 800;">' + percentageDisplay + '</span> Booking genera más ingreso neto';
         differenceNote.style.color = '#e65100';
     }
 
-    // 10. Show comparison results container
-    document.getElementById('bookingComparisonResults').style.display = 'block';
+    // 11. Show comparison toggle and expand results
+    const toggleBtn = document.getElementById('bookingComparisonToggle');
+    const resultsContainer = document.getElementById('bookingComparisonResults');
 
-    // 11. Store comparison data in window.currentQuotation for printing
+    // Show toggle button
+    toggleBtn.style.display = 'flex';
+
+    // Expand results and update toggle button text
+    resultsContainer.style.display = 'block';
+    toggleBtn.innerHTML = '<i class="fa-solid fa-chevron-up" style="color: #003580;"></i> <span style="color: #003580;">Ocultar Comparativa</span>';
+
+    // 12. Store comparison data in window.currentQuotation for printing
     window.currentQuotation.comparisonPerformed = true;
     window.currentQuotation.bookingPrice = bookingPriceInput;
     window.currentQuotation.bookingBase = bookingBase;
     window.currentQuotation.bookingMobileDiscount = bookingMobileDiscount;
-    window.currentQuotation.bookingDifferential = bookingDifferential;
-    window.currentQuotation.bookingDiffPercent = bookingDiffPct * 100;
+    window.currentQuotation.bookingBaseCommission = bookingBaseCommission * 100;
+    window.currentQuotation.bookingPaysPercent = bookingDiffPct * 100;
+    window.currentQuotation.bookingPagaAmount = bookingPagaAmount;
+    window.currentQuotation.bookingClientPVP = bookingClientPVP;
+    window.currentQuotation.fullCommissionAmount = fullCommissionAmount;
+    window.currentQuotation.effectiveCommission = effectiveCommission * 100;
+    window.currentQuotation.effectiveCommissionAmount = effectiveCommissionAmount;
+    window.currentQuotation.hotelNetRevenue = hotelNetRevenue;
+    window.currentQuotation.directNetRevenue = directNetRevenue;
+    window.currentQuotation.percentageGain = percentageGain;
     window.currentQuotation.bookingTotal = bookingTotal;
     window.currentQuotation.comparisonDifference = difference;
 
-    // Auto-scroll to comparison results on mobile
+    // Auto-scroll to comparison toggle/results on mobile
     if (window.innerWidth <= 600) {
-        document.getElementById('bookingComparisonResults').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        toggleBtn.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
