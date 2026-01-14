@@ -30,6 +30,7 @@ const translations = {
         phone2: '• Teléfono: +34 971 686 100',
         footer: 'Avenida Paguera, 81, 07160 Paguera, Islas Baleares | www.hotelbahia.com',
         issuedOn: 'Emitido el',
+        bahiaFamilyDiscount: 'Descuento Bahia Family',
         roomDouble: 'Doble',
         roomDoubleEco: 'Doble Económica',
         roomTriple: 'Triple',
@@ -74,7 +75,8 @@ const translations = {
         mealAccommodation: 'Accommodation Only',
         mealBreakfast: 'Bed and Breakfast',
         mealHalfBoard: 'Half Board',
-        issuedOn: 'Issued on'
+        issuedOn: 'Issued on',
+        bahiaFamilyDiscount: 'Bahia Family Discount'
     },
     de: {
         hotelTitle: 'Hotel Bahía',
@@ -112,7 +114,8 @@ const translations = {
         mealAccommodation: 'Nur Übernachtung',
         mealBreakfast: 'Übernachtung und Frühstück',
         mealHalfBoard: 'Halbpension',
-        issuedOn: 'Ausgestellt am'
+        issuedOn: 'Ausgestellt am',
+        bahiaFamilyDiscount: 'Bahia Family Rabatt'
     },
     fr: {
         hotelTitle: 'Hotel Bahía',
@@ -150,7 +153,8 @@ const translations = {
         mealAccommodation: 'Hébergement',
         mealBreakfast: 'Petit-déjeuner',
         mealHalfBoard: 'Demi-pension',
-        issuedOn: 'Émis le'
+        issuedOn: 'Émis le',
+        bahiaFamilyDiscount: 'Remise Bahia Family'
     }
 };
 
@@ -161,11 +165,17 @@ function formatCurrency(val) {
 
 /**
  * Formats a date string or Date object to European format (DD/MM/YYYY)
- * @param {string|Date} dateInput - Date in ISO format (YYYY-MM-DD) or Date object
+ * @param {string|Date} dateInput - Date in ISO format (YYYY-MM-DD or full ISO) or Date object
  * @returns {string} Date formatted as DD/MM/YYYY
  */
 function formatDateEuropean(dateInput) {
-    const date = typeof dateInput === 'string' ? new Date(dateInput + 'T00:00:00') : dateInput;
+    let date;
+    if (typeof dateInput === 'string') {
+        // Handle both YYYY-MM-DD and full ISO strings (e.g., 2026-01-14T15:30:00.000Z)
+        date = dateInput.includes('T') ? new Date(dateInput) : new Date(dateInput + 'T00:00:00');
+    } else {
+        date = dateInput;
+    }
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
@@ -313,16 +323,8 @@ function generatePrintHTML(q, lang) {
                     <div class="detail-value">€ ${formatCurrency(q.webBaseTotal)}</div>
                 </div>
                 <div class="detail-row">
-                    <div class="detail-label">Dto. Loyalty (5%):</div>
-                    <div class="detail-value">-€ ${formatCurrency(q.loyaltyDiscountAmount)}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Dto. Web/Mobile (10%):</div>
-                    <div class="detail-value">-€ ${formatCurrency(q.mobileDiscountAmount)}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">${t(lang, 'directBookingDiscount')} (${q.directDiscountPercent.toFixed(0)}%):</div>
-                    <div class="detail-value">-€ ${formatCurrency(q.directDiscountAmount)}</div>
+                    <div class="detail-label">${t(lang, 'bahiaFamilyDiscount')}:</div>
+                    <div class="detail-value">-€ ${formatCurrency(q.loyaltyDiscountAmount + q.mobileDiscountAmount + q.directDiscountAmount)}</div>
                 </div>
                 <div class="total-row">
                     <div class="total-label">${t(lang, 'totalCharge')}</div>
