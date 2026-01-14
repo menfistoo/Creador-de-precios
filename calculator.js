@@ -212,6 +212,20 @@ function saveSettings() {
 }
 
 /**
+ * Validation helper functions
+ */
+
+/**
+ * Clear error styling from a specific element
+ * @param {HTMLElement} element - The element to clear error from
+ */
+function clearFieldError(element) {
+    if (element) {
+        element.classList.remove('input-error');
+    }
+}
+
+/**
  * Main calculation engine
  */
 function calculateQuotation() {
