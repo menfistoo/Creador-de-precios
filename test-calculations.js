@@ -46,40 +46,57 @@ console.log('Direct Discount (' + testCase.directDiscountPct + '%): ' + formatCu
 console.log('Client Price (TOTAL): ' + formatCurrency(clientPrice));
 console.log('Tourist Tax (Informative): ' + formatCurrency(touristTax));
 
-// Step 2: Calculate Booking comparison
+// Step 2: Calculate Booking comparison with CORRECT commission formula
 const bookingBase = testCase.bookingPrice - touristTax; // 200 - 13.2 = 186.8
 const bookingMobileDiscountPctVal = testCase.bookingMobileDiscountPct / 100; // 0.10
-const bookingDiffPct = 0.08; // Default 8% for Doble
 
 const bookingMobileDiscount = bookingBase * bookingMobileDiscountPctVal; // 186.8 * 0.10 = 18.68
 const bookingAfterMobile = bookingBase - bookingMobileDiscount; // 186.8 - 18.68 = 168.12
-const bookingDifferential = bookingAfterMobile * bookingDiffPct; // 168.12 * 0.08 = 13.4496
-const bookingTotal = bookingAfterMobile - bookingDifferential; // 168.12 - 13.4496 = 154.67
 
-// Calculate difference
-const difference = bookingTotal - clientPrice; // 154.67 - 159.03 = -4.36
+// NEW CORRECT COMMISSION FORMULA:
+// effectiveCommission = baseCommission - bookingPays (NOT a simple discount!)
+const baseCommissionPct = 0.17; // 17% base Booking.com commission
+const bookingPaysPct = 0.08; // 8% that Booking pays for Doble room type
+const effectiveCommissionPct = baseCommissionPct - bookingPaysPct; // 0.17 - 0.08 = 0.09 (9%)
+const commissionAmount = bookingAfterMobile * effectiveCommissionPct; // 168.12 * 0.09 = 15.1308
+const hotelNetRevenue = bookingAfterMobile - commissionAmount; // 168.12 - 15.1308 = 152.9892
 
-console.log('\n=== BOOKING COMPARISON ===');
+// Direct booking net revenue = clientPrice (hotel keeps 100% of direct bookings)
+const directNetRevenue = clientPrice; // 159.03
+
+// Calculate percentage differential: ((directNet - bookingNet) / bookingNet) × 100
+const percentageGain = ((directNetRevenue - hotelNetRevenue) / hotelNetRevenue) * 100; // ~3.95%
+
+// Calculate raw difference
+const difference = hotelNetRevenue - directNetRevenue; // 152.99 - 159.03 = -6.04
+
+console.log('\n=== BOOKING COMPARISON (CORRECT COMMISSION FORMULA) ===');
 console.log('Booking Price Input: ' + formatCurrency(testCase.bookingPrice));
 console.log('Booking Base (minus tourist tax): ' + formatCurrency(bookingBase));
 console.log('Booking Mobile Discount (' + testCase.bookingMobileDiscountPct + '%): ' + formatCurrency(bookingMobileDiscount));
-console.log('Booking Differential (' + (bookingDiffPct*100) + '%): ' + formatCurrency(bookingDifferential));
-console.log('Booking Total: ' + formatCurrency(bookingTotal));
+console.log('Booking After Mobile: ' + formatCurrency(bookingAfterMobile));
+console.log('Base Commission: ' + (baseCommissionPct * 100) + '%');
+console.log('Booking Pays: ' + (bookingPaysPct * 100) + '%');
+console.log('Effective Commission: ' + (effectiveCommissionPct * 100) + '% (= ' + (baseCommissionPct * 100) + '% - ' + (bookingPaysPct * 100) + '%)');
+console.log('Commission Amount: ' + formatCurrency(commissionAmount));
+console.log('Hotel Net Revenue (Booking): ' + formatCurrency(hotelNetRevenue));
 
-console.log('\n=== COMPARISON RESULT ===');
-console.log('Direct Total: ' + formatCurrency(clientPrice));
-console.log('Booking Total: ' + formatCurrency(bookingTotal));
+console.log('\n=== COMPARISON RESULT (NET HOTEL REVENUE) ===');
+console.log('Direct Net Revenue: ' + formatCurrency(directNetRevenue));
+console.log('Booking Net Revenue: ' + formatCurrency(hotelNetRevenue));
 console.log('Difference: ' + formatCurrency(difference));
+console.log('Percentage Gain: ' + (percentageGain >= 0 ? '+' : '') + percentageGain.toFixed(2) + '%');
 
-if (difference >= 0) {
-    console.log('RESULT: Direct booking is BETTER for the hotel');
+if (percentageGain >= 0) {
+    console.log('RESULT: Direct booking generates ' + percentageGain.toFixed(2) + '% MORE net revenue for the hotel');
 } else {
-    console.log('RESULT: Booking generates more net revenue');
+    console.log('RESULT: Booking generates ' + Math.abs(percentageGain).toFixed(2) + '% more net revenue');
 }
 
 // Verification checks
 console.log('\n=== VERIFICATION CHECKS ===');
 const tests = [
+    // Main quotation tests (unchanged)
     { name: 'Web Base Total is 200', expected: 200, actual: webBaseTotal },
     { name: 'Loyalty Amount is 10', expected: 10, actual: loyaltyAmount },
     { name: 'Mobile Amount is 19', expected: 19, actual: mobileAmount },
@@ -87,7 +104,20 @@ const tests = [
     { name: 'Direct Amount is ~11.97', expected: 11.97, actual: directAmount, tolerance: 0.01 },
     { name: 'Client Price is ~159.03', expected: 159.03, actual: clientPrice, tolerance: 0.01 },
     { name: 'Tourist Tax is 13.2', expected: 13.2, actual: touristTax },
+
+    // Booking comparison base tests
     { name: 'Booking Base is ~186.8', expected: 186.8, actual: bookingBase, tolerance: 0.01 },
+    { name: 'Booking Mobile Discount is ~18.68', expected: 18.68, actual: bookingMobileDiscount, tolerance: 0.01 },
+    { name: 'Booking After Mobile is ~168.12', expected: 168.12, actual: bookingAfterMobile, tolerance: 0.01 },
+
+    // NEW COMMISSION FORMULA TESTS
+    { name: 'Effective Commission is 9% (17% - 8%)', expected: 0.09, actual: effectiveCommissionPct, tolerance: 0.001 },
+    { name: 'Commission Amount is ~15.13', expected: 15.1308, actual: commissionAmount, tolerance: 0.01 },
+    { name: 'Hotel Net Revenue (Booking) is ~152.99', expected: 152.9892, actual: hotelNetRevenue, tolerance: 0.01 },
+
+    // NET REVENUE COMPARISON TESTS
+    { name: 'Direct Net Revenue is ~159.03', expected: 159.03, actual: directNetRevenue, tolerance: 0.01 },
+    { name: 'Percentage Gain is ~3.95%', expected: 3.95, actual: percentageGain, tolerance: 0.1 },
 ];
 
 let allPassed = true;
