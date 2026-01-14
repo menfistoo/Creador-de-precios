@@ -253,6 +253,53 @@ function markFieldError(element) {
 }
 
 /**
+ * Validate and highlight missing fields
+ * @returns {string[]} Array of missing field names in Spanish
+ */
+function validateAndHighlightFields() {
+    clearAllFieldErrors();
+    const missingFields = [];
+
+    // Check dates (nights > 0)
+    const nights = parseInt(document.getElementById('nights').value) || 0;
+    if (nights <= 0) {
+        markFieldError(document.getElementById('checkIn'));
+        markFieldError(document.getElementById('checkOut'));
+        missingFields.push('Fechas');
+    }
+
+    // Check rooms - iterate through each room item
+    document.querySelectorAll('.room-item').forEach(item => {
+        const typeEl = item.querySelector('.room-type');
+        const priceEl = item.querySelector('.room-price');
+        const type = typeEl?.value;
+        const price = parseFloat(priceEl?.value) || 0;
+
+        if (!type) {
+            markFieldError(typeEl);
+            if (!missingFields.includes('Tipo de habitación')) {
+                missingFields.push('Tipo de habitación');
+            }
+        }
+        if (price <= 0) {
+            markFieldError(priceEl);
+            if (!missingFields.includes('Precio de habitación')) {
+                missingFields.push('Precio de habitación');
+            }
+        }
+    });
+
+    // Check regime
+    const regimeEl = document.getElementById('regime');
+    if (!regimeEl?.value) {
+        markFieldError(regimeEl);
+        missingFields.push('Régimen');
+    }
+
+    return missingFields;
+}
+
+/**
  * Main calculation engine
  */
 function calculateQuotation() {
