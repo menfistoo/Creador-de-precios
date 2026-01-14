@@ -249,7 +249,7 @@ function generatePrintHTML(q, lang) {
         <div class="guest-info">
             <div style="margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: baseline;">
                 <div style="font-size: 16px; font-weight: bold; color: #bf600c;">${quotationNumber}</div>
-                <div style="font-size: 11px; color: #999;">${t(lang, 'issuedOn')} ${new Date(q.dateEmitted).toLocaleDateString(lang === 'es' ? 'es-ES' : lang === 'en' ? 'en-US' : lang === 'de' ? 'de-DE' : 'fr-FR')}</div>
+                <div style="font-size: 11px; color: #999;">${t(lang, 'issuedOn')} ${formatDateEuropean(q.dateEmitted)}</div>
             </div>
             
             <div class="info-row">
