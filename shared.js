@@ -159,6 +159,19 @@ function formatCurrency(val) {
     return parseFloat(val).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+/**
+ * Formats a date string or Date object to European format (DD/MM/YYYY)
+ * @param {string|Date} dateInput - Date in ISO format (YYYY-MM-DD) or Date object
+ * @returns {string} Date formatted as DD/MM/YYYY
+ */
+function formatDateEuropean(dateInput) {
+    const date = typeof dateInput === 'string' ? new Date(dateInput + 'T00:00:00') : dateInput;
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
 // Get translation
 function t(lang, key) {
     if (!translations[lang]) lang = 'es';
@@ -236,7 +249,7 @@ function generatePrintHTML(q, lang) {
         <div class="guest-info">
             <div style="margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: baseline;">
                 <div style="font-size: 16px; font-weight: bold; color: #bf600c;">${quotationNumber}</div>
-                <div style="font-size: 11px; color: #999;">${t(lang, 'issuedOn')} ${new Date(q.dateEmitted).toLocaleDateString(lang === 'es' ? 'es-ES' : lang === 'en' ? 'en-US' : lang === 'de' ? 'de-DE' : 'fr-FR')}</div>
+                <div style="font-size: 11px; color: #999;">${t(lang, 'issuedOn')} ${formatDateEuropean(q.dateEmitted)}</div>
             </div>
             
             <div class="info-row">
@@ -264,11 +277,11 @@ function generatePrintHTML(q, lang) {
                 <div class="section-title"><i class="fa-solid fa-calendar-days"></i> ${t(lang, 'stayInfo')}</div>
                 <div class="detail-row">
                     <div class="detail-label">${t(lang, 'checkIn')}:</div>
-                    <div class="detail-value">${new Date(q.checkIn).toLocaleDateString(lang === 'es' ? 'es-ES' : lang === 'en' ? 'en-US' : lang === 'de' ? 'de-DE' : 'fr-FR')}</div>
+                    <div class="detail-value">${formatDateEuropean(q.checkIn)}</div>
                 </div>
                 <div class="detail-row">
                     <div class="detail-label">${t(lang, 'checkOut')}:</div>
-                    <div class="detail-value">${new Date(q.checkOut).toLocaleDateString(lang === 'es' ? 'es-ES' : lang === 'en' ? 'en-US' : lang === 'de' ? 'de-DE' : 'fr-FR')}</div>
+                    <div class="detail-value">${formatDateEuropean(q.checkOut)}</div>
                 </div>
                 <div class="detail-row">
                     <div class="detail-label">${t(lang, 'nights')}:</div>

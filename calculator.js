@@ -53,6 +53,20 @@ function updateNights() {
 }
 
 /**
+ * Handles check-in date change - auto-populates check-out to next day
+ */
+function onCheckInChange() {
+    const checkInValue = document.getElementById('checkIn').value;
+    if (checkInValue) {
+        const checkInDate = new Date(checkInValue + 'T00:00:00');
+        const checkOutDate = new Date(checkInDate);
+        checkOutDate.setDate(checkOutDate.getDate() + 1);
+        document.getElementById('checkOut').value = checkOutDate.toISOString().split('T')[0];
+    }
+    updateNights();
+}
+
+/**
  * Get rooms from the dynamic list
  */
 function getRooms() {
