@@ -303,15 +303,25 @@ function validateAndHighlightFields() {
  * Main calculation engine
  */
 function calculateQuotation() {
+    // First validate and highlight missing fields
+    const missingFields = validateAndHighlightFields();
+
+    if (missingFields.length > 0) {
+        alert('Por favor, completa los campos requeridos:\n• ' + missingFields.join('\n• '));
+
+        // Scroll to first error field
+        const firstError = document.querySelector('.input-error');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstError.focus();
+        }
+        return;
+    }
+
     const nights = parseInt(document.getElementById('nights').value);
     const rooms = getRooms();
     const regime = document.getElementById('regime').value;
     const adults = parseInt(document.getElementById('adults').value) || 0;
-
-    if (!nights || rooms.length === 0 || !regime) {
-        alert('Por favor, completa los campos requeridos (*)');
-        return;
-    }
 
     let webBaseTotal = 0;
     let roomsDesc = [];
