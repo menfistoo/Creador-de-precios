@@ -328,6 +328,135 @@ function toggleDetails() {
 }
 
 /**
+ * Booking comparison calculation
+ * Compares direct booking price with Booking.com price
+ */
+function calculateBookingComparison() {
+    // 1. Validate that main quotation exists
+    if (!window.currentQuotation) {
+        alert('Por favor, calcula primero la cotización principal');
+        return;
+    }
+
+    // 2. Get and validate Booking price input
+    const bookingPriceInput = parseFloat(document.getElementById('bookingPrice').value);
+    if (isNaN(bookingPriceInput) || bookingPriceInput <= 0) {
+        alert('Por favor, introduce un precio válido de Booking (mayor que 0)');
+        return;
+    }
+
+    // 2b. Validate booking price is greater than tourist tax (makes sense logically)
+    const q = window.currentQuotation;
+    if (bookingPriceInput <= q.touristTax) {
+        alert('El precio de Booking debe ser mayor que la tasa turística (' + formatCurrency(q.touristTax) + ')');
+        return;
+    }
+
+    // 3. Get mobile discount percentage (clamp to 0-100%)
+    let bookingMobileDiscountRaw = parseFloat(document.getElementById('bookingMobileDiscount').value);
+    if (isNaN(bookingMobileDiscountRaw)) {
+        bookingMobileDiscountRaw = 10; // Default to 10%
+    }
+    bookingMobileDiscountRaw = Math.max(0, Math.min(100, bookingMobileDiscountRaw));
+    const bookingMobileDiscountPct = bookingMobileDiscountRaw / 100;
+
+    // 4. Get booking differential percentage from settings based on room type
+    const settings = loadSettings();
+    const rooms = q.rooms || getRooms();
+
+    // Calculate weighted average booking differential based on room types
+    let totalWeightedDiff = 0;
+    let totalWeight = 0;
+    rooms.forEach(r => {
+        const weight = r.qty * r.price;
+        let diff = 0;
+        if (r.type === 'Doble') diff = settings.bookingDouble;
+        else if (r.type === 'Doble Económica') diff = settings.bookingDoubleEco;
+        else if (r.type === 'Triple') diff = settings.bookingTriple;
+        else if (r.type === 'Individual') diff = settings.bookingIndividual;
+        totalWeightedDiff += (weight * diff);
+        totalWeight += weight;
+    });
+    const bookingDiffPct = totalWeight > 0 ? (totalWeightedDiff / totalWeight) / 100 : 0.08;
+
+    // 5. Subtract tourist tax from Booking price to get base
+    const bookingBase = bookingPriceInput - q.touristTax;
+
+    // 6. Calculate Booking breakdown
+    const bookingMobileDiscount = bookingBase * bookingMobileDiscountPct;
+    const bookingAfterMobile = bookingBase - bookingMobileDiscount;
+    const bookingDifferential = bookingAfterMobile * bookingDiffPct;
+    const bookingTotal = bookingAfterMobile - bookingDifferential;
+
+    // 7. Get Direct values from currentQuotation
+    const directBase = q.webBaseTotal;
+    const directLoyalty = q.loyaltyDiscountAmount;
+    const directMobile = q.mobileDiscountAmount;
+    const directDiscount = q.directDiscountAmount;
+    const directTotal = q.clientPrice;
+
+    // 8. Calculate difference (positive = Direct is cheaper/better for hotel)
+    const difference = bookingTotal - directTotal;
+
+    // 9. Update all DOM elements with results
+    document.getElementById('comp-direct-base').textContent = formatCurrency(directBase);
+    document.getElementById('comp-direct-loyalty').textContent = formatCurrency(directLoyalty);
+    document.getElementById('comp-direct-mobile').textContent = formatCurrency(directMobile);
+    document.getElementById('comp-direct-discount').textContent = formatCurrency(directDiscount);
+    document.getElementById('comp-direct-discount-label').textContent = q.directDiscountPercent.toFixed(0);
+    document.getElementById('comp-direct-total').textContent = formatCurrency(directTotal);
+
+    document.getElementById('comp-booking-base').textContent = formatCurrency(bookingBase);
+    document.getElementById('comp-booking-mobile').textContent = formatCurrency(bookingMobileDiscount);
+    document.getElementById('comp-booking-8pct').textContent = formatCurrency(bookingDifferential);
+    document.getElementById('comp-booking-8pct-label').textContent = (bookingDiffPct * 100).toFixed(0);
+    document.getElementById('comp-booking-total').textContent = formatCurrency(bookingTotal);
+
+    // Update difference display
+    document.getElementById('comp-difference').textContent = formatCurrency(Math.abs(difference));
+
+    const differenceBox = document.getElementById('comparisonDifferenceBox');
+    const differenceNote = document.getElementById('comp-difference-note');
+    const differenceLabel = document.getElementById('comp-difference-label');
+
+    if (difference >= 0) {
+        // Direct is cheaper or equal - good for hotel
+        differenceBox.style.background = '#e8f5e9';
+        differenceBox.style.borderColor = '#4caf50';
+        differenceLabel.textContent = 'Ahorro con Cliente Directo';
+        differenceLabel.style.color = '#2e7d32';
+        differenceNote.textContent = difference > 0 ? 'El hotel gana más con reserva directa' : 'Mismo resultado';
+        differenceNote.style.color = '#2e7d32';
+    } else {
+        // Booking is cheaper - warning
+        differenceBox.style.background = '#fff3e0';
+        differenceBox.style.borderColor = '#ff9800';
+        differenceLabel.textContent = 'Diferencia a favor de Booking';
+        differenceLabel.style.color = '#e65100';
+        differenceNote.textContent = 'Booking genera más ingreso neto';
+        differenceNote.style.color = '#e65100';
+    }
+
+    // 10. Show comparison results container
+    document.getElementById('bookingComparisonResults').style.display = 'block';
+
+    // 11. Store comparison data in window.currentQuotation for printing
+    window.currentQuotation.comparisonPerformed = true;
+    window.currentQuotation.bookingPrice = bookingPriceInput;
+    window.currentQuotation.bookingBase = bookingBase;
+    window.currentQuotation.bookingMobileDiscount = bookingMobileDiscount;
+    window.currentQuotation.bookingDifferential = bookingDifferential;
+    window.currentQuotation.bookingDiffPercent = bookingDiffPct * 100;
+    window.currentQuotation.bookingTotal = bookingTotal;
+    window.currentQuotation.comparisonDifference = difference;
+
+    // Auto-scroll to comparison results on mobile
+    if (window.innerWidth <= 600) {
+        document.getElementById('bookingComparisonResults').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+/**
  * Print and save to history
  */
 function printQuotation() {
