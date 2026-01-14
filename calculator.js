@@ -151,7 +151,8 @@ function loadSettings() {
         bookingDouble: 8,
         bookingDoubleEco: 8,
         bookingTriple: 8,
-        bookingIndividual: 0
+        bookingIndividual: 0,
+        bookingBaseCommission: 17
     };
     const saved = localStorage.getItem('hotelBahiaSettings');
     return saved ? JSON.parse(saved) : defaults;
@@ -167,7 +168,8 @@ function openSettings() {
         'cfg-booking-double': settings.bookingDouble,
         'cfg-booking-double-eco': settings.bookingDoubleEco,
         'cfg-booking-triple': settings.bookingTriple,
-        'cfg-booking-individual': settings.bookingIndividual
+        'cfg-booking-individual': settings.bookingIndividual,
+        'cfg-booking-commission': settings.bookingBaseCommission
     };
 
     for (const [id, value] of Object.entries(fields)) {
@@ -203,7 +205,8 @@ function saveSettings() {
         bookingDouble: getValue('cfg-booking-double', current.bookingDouble),
         bookingDoubleEco: getValue('cfg-booking-double-eco', current.bookingDoubleEco),
         bookingTriple: getValue('cfg-booking-triple', current.bookingTriple),
-        bookingIndividual: getValue('cfg-booking-individual', current.bookingIndividual)
+        bookingIndividual: getValue('cfg-booking-individual', current.bookingIndividual),
+        bookingBaseCommission: getValue('cfg-booking-commission', current.bookingBaseCommission)
     };
 
     localStorage.setItem('hotelBahiaSettings', JSON.stringify(settings));
