@@ -385,23 +385,37 @@ function calculateBookingComparison() {
     // 5. Subtract tourist tax from Booking price to get base
     const bookingBase = bookingPriceInput - q.touristTax;
 
-    // 6. Calculate Booking breakdown
+    // 6. Calculate Booking breakdown with correct commission logic
     const bookingMobileDiscount = bookingBase * bookingMobileDiscountPct;
     const bookingAfterMobile = bookingBase - bookingMobileDiscount;
-    const bookingDifferential = bookingAfterMobile * bookingDiffPct;
-    const bookingTotal = bookingAfterMobile - bookingDifferential;
+
+    // Commission calculation: effectiveCommission = baseCommission - bookingPays
+    const bookingBaseCommission = (settings.bookingBaseCommission || 17) / 100;
+    const effectiveCommission = Math.max(0, bookingBaseCommission - bookingDiffPct);
+    const commissionAmount = bookingAfterMobile * effectiveCommission;
+    const hotelNetRevenue = bookingAfterMobile - commissionAmount;
+
+    // bookingTotal represents what client pays (for display), hotelNetRevenue is what hotel receives
+    const bookingTotal = bookingAfterMobile; // Client pays after mobile discount
 
     // 7. Get Direct values from currentQuotation
     const directBase = q.webBaseTotal;
     const directLoyalty = q.loyaltyDiscountAmount;
     const directMobile = q.mobileDiscountAmount;
     const directDiscount = q.directDiscountAmount;
-    const directTotal = q.clientPrice;
+    const directTotal = q.clientPrice; // This is also hotel net revenue for direct booking
 
-    // 8. Calculate difference (positive = Direct is cheaper/better for hotel)
-    const difference = bookingTotal - directTotal;
+    // 8. Calculate percentage differential: ((directNet - bookingNet) / bookingNet) × 100
+    const directNetRevenue = directTotal; // For direct booking, client price = hotel net revenue
+    const bookingNetRevenue = hotelNetRevenue;
+    const percentageGain = bookingNetRevenue > 0
+        ? ((directNetRevenue - bookingNetRevenue) / bookingNetRevenue) * 100
+        : 0;
 
-    // 9. Update all DOM elements with results
+    // 9. Calculate difference (positive = Direct generates more hotel revenue)
+    const difference = directNetRevenue - bookingNetRevenue;
+
+    // 10. Update all DOM elements with results
     document.getElementById('comp-direct-base').textContent = formatCurrency(directBase);
     document.getElementById('comp-direct-loyalty').textContent = formatCurrency(directLoyalty);
     document.getElementById('comp-direct-mobile').textContent = formatCurrency(directMobile);
@@ -411,9 +425,9 @@ function calculateBookingComparison() {
 
     document.getElementById('comp-booking-base').textContent = formatCurrency(bookingBase);
     document.getElementById('comp-booking-mobile').textContent = formatCurrency(bookingMobileDiscount);
-    document.getElementById('comp-booking-8pct').textContent = formatCurrency(bookingDifferential);
-    document.getElementById('comp-booking-8pct-label').textContent = (bookingDiffPct * 100).toFixed(0);
-    document.getElementById('comp-booking-total').textContent = formatCurrency(bookingTotal);
+    document.getElementById('comp-booking-8pct').textContent = formatCurrency(commissionAmount);
+    document.getElementById('comp-booking-8pct-label').textContent = (effectiveCommission * 100).toFixed(0);
+    document.getElementById('comp-booking-total').textContent = formatCurrency(hotelNetRevenue);
 
     // Update difference display
     document.getElementById('comp-difference').textContent = formatCurrency(Math.abs(difference));
@@ -440,16 +454,21 @@ function calculateBookingComparison() {
         differenceNote.style.color = '#e65100';
     }
 
-    // 10. Show comparison results container
+    // 11. Show comparison results container
     document.getElementById('bookingComparisonResults').style.display = 'block';
 
-    // 11. Store comparison data in window.currentQuotation for printing
+    // 12. Store comparison data in window.currentQuotation for printing
     window.currentQuotation.comparisonPerformed = true;
     window.currentQuotation.bookingPrice = bookingPriceInput;
     window.currentQuotation.bookingBase = bookingBase;
     window.currentQuotation.bookingMobileDiscount = bookingMobileDiscount;
-    window.currentQuotation.bookingDifferential = bookingDifferential;
-    window.currentQuotation.bookingDiffPercent = bookingDiffPct * 100;
+    window.currentQuotation.bookingBaseCommission = bookingBaseCommission * 100;
+    window.currentQuotation.bookingPaysPercent = bookingDiffPct * 100;
+    window.currentQuotation.effectiveCommission = effectiveCommission * 100;
+    window.currentQuotation.commissionAmount = commissionAmount;
+    window.currentQuotation.hotelNetRevenue = hotelNetRevenue;
+    window.currentQuotation.directNetRevenue = directNetRevenue;
+    window.currentQuotation.percentageGain = percentageGain;
     window.currentQuotation.bookingTotal = bookingTotal;
     window.currentQuotation.comparisonDifference = difference;
 
