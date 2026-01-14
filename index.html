@@ -246,22 +246,29 @@
                         </div>
 
                         <!-- BOOKING COMPARISON SECTION -->
-                        <div id="bookingComparisonSection" style="margin-top: 25px; border-top: 2px solid #003580; padding-top: 20px;">
-                            <h3 style="color: #003580;"><i class="fa-solid fa-scale-balanced"></i> Comparativa Booking</h3>
-                            <div class="form-group">
-                                <label>Precio Booking (€ CON TT incluida)</label>
-                                <input type="number" id="bookingPrice" step="0.01" placeholder="Ej: 250.00" class="yellow-input">
-                            </div>
-                            <div class="form-group">
-                                <label>Descuento Mobile Booking (%)</label>
-                                <input type="number" id="bookingMobileDiscount" step="0.1" value="10" class="yellow-input">
+                        <div id="bookingComparisonSection" style="margin-top: 20px; border-top: 1px solid #c9d8eb; padding-top: 15px;">
+                            <h3 style="color: #003580; font-size: 0.95em;"><i class="fa-solid fa-scale-balanced"></i> Comparativa Booking</h3>
+                            <div class="grid-2" style="margin-bottom: 15px;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>Precio Booking (€ con TT)</label>
+                                    <input type="number" id="bookingPrice" step="0.01" placeholder="Ej: 250.00" class="yellow-input">
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>Dto. Mobile Booking (%)</label>
+                                    <input type="number" id="bookingMobileDiscount" step="0.1" value="10" class="yellow-input">
+                                </div>
                             </div>
                             <button type="button" onclick="calculateBookingComparison()" class="btn btn-primary" style="width: 100%; background: #003580;">
                                 <i class="fa-solid fa-scale-balanced"></i> Comparar con Booking
                             </button>
 
+                            <!-- Comparison Results Toggle (hidden by default, shown after comparison) -->
+                            <div id="bookingComparisonToggle" class="details-toggle" onclick="toggleBookingComparison()" style="display: none; margin-top: 15px; background: #f0f4fa; border-color: #003580;">
+                                <i class="fa-solid fa-chevron-down" style="color: #003580;"></i> <span style="color: #003580;">Ver Comparativa</span>
+                            </div>
+
                             <!-- Comparison Results Table (hidden by default) -->
-                            <div id="bookingComparisonResults" style="display: none; margin-top: 20px; animation: fadeIn 0.5s;">
+                            <div id="bookingComparisonResults" style="display: none; margin-top: 15px; animation: fadeIn 0.5s;">
                                 <div class="table-wrapper">
                                     <table class="comparison-table">
                                         <thead>
@@ -343,11 +350,20 @@
                 <span style="cursor: pointer; font-size: 1.5em;" onclick="closeSettings()">&times;</span>
             </div>
 
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label>Comision Base Booking (%)</label>
-                <input type="number" id="cfg-booking-commission" step="0.1" class="yellow-input">
+            <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 0.9em; color: #003580; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-hotel"></i> Booking.com
+                </h4>
+                <div class="form-group" style="margin-bottom: 0; background: #f0f4fa; padding: 12px; border-radius: 6px; border-left: 3px solid #003580;">
+                    <label style="color: #003580;">Comisión Base Booking (%)</label>
+                    <input type="number" id="cfg-booking-commission" step="0.1" class="yellow-input" placeholder="17">
+                    <small style="color: #666; font-size: 0.75em; display: block; margin-top: 4px;">Comisión estándar de Booking.com antes del diferencial por habitación</small>
+                </div>
             </div>
 
+            <h4 style="font-size: 0.9em; color: #333; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-bed"></i> Descuentos por Tipo de Habitación
+            </h4>
             <div class="settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div class="form-group">
                     <label>Doble: Dto. Directo (%)</label>

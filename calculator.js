@@ -331,6 +331,21 @@ function toggleDetails() {
 }
 
 /**
+ * Toggle booking comparison results visibility
+ */
+function toggleBookingComparison() {
+    const content = document.getElementById('bookingComparisonResults');
+    const btn = document.getElementById('bookingComparisonToggle');
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        btn.innerHTML = '<i class="fa-solid fa-chevron-up" style="color: #003580;"></i> <span style="color: #003580;">Ocultar Comparativa</span>';
+    } else {
+        content.style.display = 'none';
+        btn.innerHTML = '<i class="fa-solid fa-chevron-down" style="color: #003580;"></i> <span style="color: #003580;">Ver Comparativa</span>';
+    }
+}
+
+/**
  * Booking comparison calculation
  * Compares direct booking price with Booking.com price
  */
@@ -485,8 +500,16 @@ function calculateBookingComparison() {
         differenceNote.style.color = '#e65100';
     }
 
-    // 11. Show comparison results container
-    document.getElementById('bookingComparisonResults').style.display = 'block';
+    // 11. Show comparison toggle and expand results
+    const toggleBtn = document.getElementById('bookingComparisonToggle');
+    const resultsContainer = document.getElementById('bookingComparisonResults');
+
+    // Show toggle button
+    toggleBtn.style.display = 'flex';
+
+    // Expand results and update toggle button text
+    resultsContainer.style.display = 'block';
+    toggleBtn.innerHTML = '<i class="fa-solid fa-chevron-up" style="color: #003580;"></i> <span style="color: #003580;">Ocultar Comparativa</span>';
 
     // 12. Store comparison data in window.currentQuotation for printing
     window.currentQuotation.comparisonPerformed = true;
@@ -506,9 +529,9 @@ function calculateBookingComparison() {
     window.currentQuotation.bookingTotal = bookingTotal;
     window.currentQuotation.comparisonDifference = difference;
 
-    // Auto-scroll to comparison results on mobile
+    // Auto-scroll to comparison toggle/results on mobile
     if (window.innerWidth <= 600) {
-        document.getElementById('bookingComparisonResults').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        toggleBtn.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
