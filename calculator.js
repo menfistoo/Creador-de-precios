@@ -429,28 +429,36 @@ function calculateBookingComparison() {
     document.getElementById('comp-booking-8pct-label').textContent = (effectiveCommission * 100).toFixed(0);
     document.getElementById('comp-booking-total').textContent = formatCurrency(hotelNetRevenue);
 
-    // Update difference display
+    // Update difference display with percentage advantage
     document.getElementById('comp-difference').textContent = formatCurrency(Math.abs(difference));
 
     const differenceBox = document.getElementById('comparisonDifferenceBox');
     const differenceNote = document.getElementById('comp-difference-note');
     const differenceLabel = document.getElementById('comp-difference-label');
 
+    // Format percentage with sign
+    const percentageSign = percentageGain >= 0 ? '+' : '';
+    const percentageDisplay = percentageSign + percentageGain.toFixed(1) + '%';
+
     if (difference >= 0) {
-        // Direct is cheaper or equal - good for hotel
+        // Direct is better or equal - good for hotel (green)
         differenceBox.style.background = '#e8f5e9';
         differenceBox.style.borderColor = '#4caf50';
-        differenceLabel.textContent = 'Ahorro con Cliente Directo';
+        differenceLabel.textContent = 'Ventaja Cliente Directo';
         differenceLabel.style.color = '#2e7d32';
-        differenceNote.textContent = difference > 0 ? 'El hotel gana más con reserva directa' : 'Mismo resultado';
+        if (difference > 0) {
+            differenceNote.innerHTML = '<span style="font-size: 1.4em; font-weight: 800;">' + percentageDisplay + '</span> más ingreso neto con reserva directa';
+        } else {
+            differenceNote.textContent = 'Mismo resultado en ambos canales';
+        }
         differenceNote.style.color = '#2e7d32';
     } else {
-        // Booking is cheaper - warning
+        // Booking is better - warning (orange)
         differenceBox.style.background = '#fff3e0';
         differenceBox.style.borderColor = '#ff9800';
         differenceLabel.textContent = 'Diferencia a favor de Booking';
         differenceLabel.style.color = '#e65100';
-        differenceNote.textContent = 'Booking genera más ingreso neto';
+        differenceNote.innerHTML = '<span style="font-size: 1.4em; font-weight: 800;">' + percentageDisplay + '</span> Booking genera más ingreso neto';
         differenceNote.style.color = '#e65100';
     }
 
