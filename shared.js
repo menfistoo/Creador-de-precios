@@ -281,7 +281,7 @@ function generatePrintHTML(q, lang) {
                 </div>
                 <div class="detail-row">
                     <div class="detail-label">${t(lang, 'checkOut')}:</div>
-                    <div class="detail-value">${new Date(q.checkOut).toLocaleDateString(lang === 'es' ? 'es-ES' : lang === 'en' ? 'en-US' : lang === 'de' ? 'de-DE' : 'fr-FR')}</div>
+                    <div class="detail-value">${formatDateEuropean(q.checkOut)}</div>
                 </div>
                 <div class="detail-row">
                     <div class="detail-label">${t(lang, 'nights')}:</div>
