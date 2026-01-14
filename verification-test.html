@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verification Test - Date Formatting</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .test { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .pass { background: #e8f5e9; color: #2e7d32; }
+        .fail { background: #ffebee; color: #c62828; }
+        h2 { border-bottom: 2px solid #bf600c; padding-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Date Formatting Verification Tests</h1>
+
+    <h2>1. formatDateEuropean() Tests</h2>
+    <div id="formatTests"></div>
+
+    <h2>2. Auto Check-out Rollover Tests</h2>
+    <div id="rolloverTests"></div>
+
+    <h2>3. Summary</h2>
+    <div id="summary"></div>
+
+    <script src="shared.js"></script>
+    <script>
+        let passed = 0;
+        let failed = 0;
+
+        function test(name, actual, expected, container) {
+            const div = document.createElement('div');
+            const success = actual === expected;
+            div.className = 'test ' + (success ? 'pass' : 'fail');
+            div.innerHTML = `<strong>${name}</strong><br>
+                Expected: ${expected}<br>
+                Actual: ${actual}<br>
+                ${success ? '✅ PASS' : '❌ FAIL'}`;
+            document.getElementById(container).appendChild(div);
+            if (success) passed++; else failed++;
+        }
+
+        // Test formatDateEuropean
+        test('Standard date', formatDateEuropean('2026-01-14'), '14/01/2026', 'formatTests');
+        test('Single digit day', formatDateEuropean('2026-01-05'), '05/01/2026', 'formatTests');
+        test('Single digit month', formatDateEuropean('2026-09-15'), '15/09/2026', 'formatTests');
+        test('Last day of month', formatDateEuropean('2026-01-31'), '31/01/2026', 'formatTests');
+        test('Last day of year', formatDateEuropean('2026-12-31'), '31/12/2026', 'formatTests');
+        test('Leap year date', formatDateEuropean('2028-02-29'), '29/02/2028', 'formatTests');
+
+        // Test auto-checkout rollover logic
+        function simulateCheckout(checkInValue) {
+            const checkInDate = new Date(checkInValue + 'T00:00:00');
+            const checkOutDate = new Date(checkInDate);
+            checkOutDate.setDate(checkOutDate.getDate() + 1);
+            return checkOutDate.toISOString().split('T')[0];
+        }
+
+        test('Month rollover (Jan 31 → Feb 1)', simulateCheckout('2026-01-31'), '2026-02-01', 'rolloverTests');
+        test('Year rollover (Dec 31 → Jan 1)', simulateCheckout('2026-12-31'), '2027-01-01', 'rolloverTests');
+        test('Leap year (Feb 28 → Feb 29 in 2028)', simulateCheckout('2028-02-28'), '2028-02-29', 'rolloverTests');
+        test('Non-leap year (Feb 28 → Mar 1 in 2026)', simulateCheckout('2026-02-28'), '2026-03-01', 'rolloverTests');
+        test('Regular day', simulateCheckout('2026-05-15'), '2026-05-16', 'rolloverTests');
+
+        // Summary
+        document.getElementById('summary').innerHTML = `
+            <div class="test ${failed === 0 ? 'pass' : 'fail'}">
+                <strong>Total Tests: ${passed + failed}</strong><br>
+                Passed: ${passed}<br>
+                Failed: ${failed}<br>
+                ${failed === 0 ? '✅ ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}
+            </div>
+        `;
+    </script>
+</body>
+</html>
