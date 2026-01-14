@@ -277,7 +277,7 @@ function generatePrintHTML(q, lang) {
                 <div class="section-title"><i class="fa-solid fa-calendar-days"></i> ${t(lang, 'stayInfo')}</div>
                 <div class="detail-row">
                     <div class="detail-label">${t(lang, 'checkIn')}:</div>
-                    <div class="detail-value">${new Date(q.checkIn).toLocaleDateString(lang === 'es' ? 'es-ES' : lang === 'en' ? 'en-US' : lang === 'de' ? 'de-DE' : 'fr-FR')}</div>
+                    <div class="detail-value">${formatDateEuropean(q.checkIn)}</div>
                 </div>
                 <div class="detail-row">
                     <div class="detail-label">${t(lang, 'checkOut')}:</div>
