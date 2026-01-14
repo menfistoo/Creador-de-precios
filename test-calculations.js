@@ -58,6 +58,15 @@ const bookingAfterMobile = bookingBase - bookingMobileDiscount; // 186.8 - 18.68
 const baseCommissionPct = 0.17; // 17% base Booking.com commission
 const bookingPaysPct = 0.08; // 8% that Booking pays for Doble room type
 const effectiveCommissionPct = baseCommissionPct - bookingPaysPct; // 0.17 - 0.08 = 0.09 (9%)
+
+// Booking Paga: amount that Booking contributes as a discount to client price
+const bookingPagaAmount = bookingAfterMobile * bookingPaysPct; // 168.12 * 0.08 = 13.4496
+const bookingClientPVP = bookingAfterMobile - bookingPagaAmount; // 168.12 - 13.4496 = 154.6704 (what client pays)
+
+// Full commission on original price
+const fullCommissionAmount = bookingAfterMobile * baseCommissionPct; // 168.12 * 0.17 = 28.5804
+
+// Effective commission and hotel net revenue
 const commissionAmount = bookingAfterMobile * effectiveCommissionPct; // 168.12 * 0.09 = 15.1308
 const hotelNetRevenue = bookingAfterMobile - commissionAmount; // 168.12 - 15.1308 = 152.9892
 
@@ -75,10 +84,12 @@ console.log('Booking Price Input: ' + formatCurrency(testCase.bookingPrice));
 console.log('Booking Base (minus tourist tax): ' + formatCurrency(bookingBase));
 console.log('Booking Mobile Discount (' + testCase.bookingMobileDiscountPct + '%): ' + formatCurrency(bookingMobileDiscount));
 console.log('Booking After Mobile: ' + formatCurrency(bookingAfterMobile));
+console.log('Booking Paga (' + (bookingPaysPct * 100) + '%): ' + formatCurrency(bookingPagaAmount));
+console.log('Client PVP (after Booking Paga): ' + formatCurrency(bookingClientPVP));
 console.log('Base Commission: ' + (baseCommissionPct * 100) + '%');
-console.log('Booking Pays: ' + (bookingPaysPct * 100) + '%');
+console.log('Full Commission Amount: ' + formatCurrency(fullCommissionAmount));
 console.log('Effective Commission: ' + (effectiveCommissionPct * 100) + '% (= ' + (baseCommissionPct * 100) + '% - ' + (bookingPaysPct * 100) + '%)');
-console.log('Commission Amount: ' + formatCurrency(commissionAmount));
+console.log('Effective Commission Amount: ' + formatCurrency(commissionAmount));
 console.log('Hotel Net Revenue (Booking): ' + formatCurrency(hotelNetRevenue));
 
 console.log('\n=== COMPARISON RESULT (NET HOTEL REVENUE) ===');
@@ -112,7 +123,10 @@ const tests = [
 
     // NEW COMMISSION FORMULA TESTS
     { name: 'Effective Commission is 9% (17% - 8%)', expected: 0.09, actual: effectiveCommissionPct, tolerance: 0.001 },
-    { name: 'Commission Amount is ~15.13', expected: 15.1308, actual: commissionAmount, tolerance: 0.01 },
+    { name: 'Booking Paga Amount is ~13.45', expected: 13.4496, actual: bookingPagaAmount, tolerance: 0.01 },
+    { name: 'Client PVP (after Booking Paga) is ~154.67', expected: 154.6704, actual: bookingClientPVP, tolerance: 0.01 },
+    { name: 'Full Commission Amount is ~28.58', expected: 28.5804, actual: fullCommissionAmount, tolerance: 0.01 },
+    { name: 'Effective Commission Amount is ~15.13', expected: 15.1308, actual: commissionAmount, tolerance: 0.01 },
     { name: 'Hotel Net Revenue (Booking) is ~152.99', expected: 152.9892, actual: hotelNetRevenue, tolerance: 0.01 },
 
     // NET REVENUE COMPARISON TESTS

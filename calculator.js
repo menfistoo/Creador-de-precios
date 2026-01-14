@@ -392,11 +392,21 @@ function calculateBookingComparison() {
     // Commission calculation: effectiveCommission = baseCommission - bookingPays
     const bookingBaseCommission = (settings.bookingBaseCommission || 17) / 100;
     const effectiveCommission = Math.max(0, bookingBaseCommission - bookingDiffPct);
-    const commissionAmount = bookingAfterMobile * effectiveCommission;
-    const hotelNetRevenue = bookingAfterMobile - commissionAmount;
+
+    // Booking Paga: amount that Booking contributes as a discount to client price
+    const bookingPagaAmount = bookingAfterMobile * bookingDiffPct;
+    const bookingClientPVP = bookingAfterMobile - bookingPagaAmount; // What client actually pays (lowest PVP)
+
+    // Full commission is calculated on original price (before Booking Paga discount)
+    const fullCommissionAmount = bookingAfterMobile * bookingBaseCommission;
+
+    // Hotel net revenue: correct formula using effective commission
+    // hotelNetRevenue = bookingAfterMobile - (bookingAfterMobile × effectiveCommission)
+    const effectiveCommissionAmount = bookingAfterMobile * effectiveCommission;
+    const hotelNetRevenue = bookingAfterMobile - effectiveCommissionAmount;
 
     // bookingTotal represents what client pays (for display), hotelNetRevenue is what hotel receives
-    const bookingTotal = bookingAfterMobile; // Client pays after mobile discount
+    const bookingTotal = bookingClientPVP; // Client pays after Booking Paga discount
 
     // 7. Get Direct values from currentQuotation
     const directBase = q.webBaseTotal;
@@ -425,9 +435,22 @@ function calculateBookingComparison() {
 
     document.getElementById('comp-booking-base').textContent = formatCurrency(bookingBase);
     document.getElementById('comp-booking-mobile').textContent = formatCurrency(bookingMobileDiscount);
-    document.getElementById('comp-booking-8pct').textContent = formatCurrency(commissionAmount);
-    document.getElementById('comp-booking-8pct-label').textContent = (effectiveCommission * 100).toFixed(0);
+
+    // Booking Paga row
+    document.getElementById('comp-booking-paga').textContent = formatCurrency(bookingPagaAmount);
+    document.getElementById('comp-booking-paga-label').textContent = (bookingDiffPct * 100).toFixed(0);
+
+    // PVP A CLIENTE row - what client pays in each channel
+    document.getElementById('comp-direct-pvp').textContent = formatCurrency(directTotal);
+    document.getElementById('comp-booking-pvp').textContent = formatCurrency(bookingClientPVP);
+
+    // Commission row - show full base commission percentage and amount
+    document.getElementById('comp-booking-commission').textContent = formatCurrency(fullCommissionAmount);
+    document.getElementById('comp-booking-commission-label').textContent = (bookingBaseCommission * 100).toFixed(0);
+
+    // Net hotel revenue row
     document.getElementById('comp-booking-total').textContent = formatCurrency(hotelNetRevenue);
+    document.getElementById('comp-direct-total').textContent = formatCurrency(directTotal);
 
     // Update difference display with percentage advantage
     document.getElementById('comp-difference').textContent = formatCurrency(Math.abs(difference));
@@ -472,8 +495,11 @@ function calculateBookingComparison() {
     window.currentQuotation.bookingMobileDiscount = bookingMobileDiscount;
     window.currentQuotation.bookingBaseCommission = bookingBaseCommission * 100;
     window.currentQuotation.bookingPaysPercent = bookingDiffPct * 100;
+    window.currentQuotation.bookingPagaAmount = bookingPagaAmount;
+    window.currentQuotation.bookingClientPVP = bookingClientPVP;
+    window.currentQuotation.fullCommissionAmount = fullCommissionAmount;
     window.currentQuotation.effectiveCommission = effectiveCommission * 100;
-    window.currentQuotation.commissionAmount = commissionAmount;
+    window.currentQuotation.effectiveCommissionAmount = effectiveCommissionAmount;
     window.currentQuotation.hotelNetRevenue = hotelNetRevenue;
     window.currentQuotation.directNetRevenue = directNetRevenue;
     window.currentQuotation.percentageGain = percentageGain;
