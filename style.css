@@ -311,33 +311,440 @@ select:focus {
     font-size: 2em;
 }
 
-/* BOOKING COMPARISON CARD */
-.booking-card {
-    background: #f0f4fa;
-    border: 1px solid #c9d8eb;
-    border-left: 8px solid #003580;
-    /* Booking.com Blue */
-    padding: 15px;
-    border-radius: var(--radius);
-    margin-top: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMPARISON SECTION - Channel Comparison Redesign
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.comparison-section {
+    margin-top: 24px;
+    background: linear-gradient(135deg, #fefaf6 0%, #fff9f4 100%);
+    border: 1px solid #f0e6db;
+    border-radius: 12px;
+    padding: 20px;
+    border-top: 4px solid var(--primary-color);
 }
 
-.booking-card .label {
-    color: #003580;
-    font-weight: 700;
-    font-size: 0.9em;
+.comparison-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.comparison-title {
+    font-size: 1.1em;
+    font-weight: 800;
+    color: #2c3e50;
     display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.comparison-title i {
+    color: var(--primary-color);
+    font-size: 1.2em;
+}
+
+.comparison-subtitle {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.estimated-booking-price {
+    display: inline-flex;
     align-items: center;
     gap: 8px;
+    margin-top: 12px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #f8f4f0, #fff);
+    border: 1px dashed #d4c4b0;
+    border-radius: 20px;
+    font-size: 0.8em;
+    color: #666;
 }
 
-.booking-card .value {
-    color: #003580;
-    font-size: 1.4em;
+.estimated-booking-price strong {
+    color: var(--primary-color);
     font-weight: 800;
+    font-size: 1.1em;
+}
+
+/* Input Cards Row */
+.comparison-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+    margin-bottom: 20px;
+}
+
+.input-card {
+    background: white;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+.input-card:focus-within {
+    border-color: var(--primary-color);
+}
+
+.input-card label {
+    font-size: 0.7em;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.input-card label i {
+    color: var(--primary-color);
+    margin-right: 4px;
+}
+
+.input-with-suffix {
+    display: flex;
+    align-items: center;
+    background: #fafafa;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.comparison-input {
+    flex: 1;
+    border: none !important;
+    background: transparent !important;
+    padding: 8px !important;
+    font-size: 0.95em !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    box-shadow: none !important;
+    min-width: 0;
+    width: 100%;
+}
+
+.comparison-input:focus {
+    outline: none !important;
+}
+
+.input-with-suffix .suffix {
+    padding: 8px 10px;
+    background: #f0e6db;
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 0.85em;
+}
+
+.input-hint {
+    display: block;
+    font-size: 0.6em;
+    color: #999;
+    margin-top: 4px;
+}
+
+/* Compare Button */
+.compare-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    transition: background 0.2s;
+    white-space: nowrap;
+    height: 100%;
+    min-height: 42px;
+}
+
+.compare-btn:hover {
+    background: var(--primary-hover);
+}
+
+.compare-btn i {
+    font-size: 1em;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHANNEL COMPARISON TABLE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.comparison-results {
+    margin-top: 16px;
+}
+
+.comparison-table-wrapper {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    margin-bottom: 16px;
+}
+
+.channel-comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85em;
+}
+
+.channel-comparison-table thead tr {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+}
+
+.channel-comparison-table th {
+    padding: 14px 12px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: white;
+}
+
+.channel-comparison-table th.concept-col {
+    width: 45%;
+}
+
+.channel-comparison-table th.channel-col {
+    width: 27.5%;
+    text-align: right;
+}
+
+.channel-comparison-table th.direct-col {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #d4850f 100%);
+}
+
+.channel-comparison-table th.direct-col i {
+    margin-right: 6px;
+}
+
+.channel-comparison-table th.booking-col {
+    background: linear-gradient(135deg, #003580 0%, #0056b3 100%);
+}
+
+.channel-comparison-table th.booking-col i {
+    margin-right: 6px;
+}
+
+.channel-comparison-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #444;
+}
+
+.channel-comparison-table td.direct-col,
+.channel-comparison-table td.booking-col {
+    text-align: right;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.channel-comparison-table td.direct-col {
+    background: rgba(191, 96, 12, 0.03);
+    color: #8b5a00;
+}
+
+.channel-comparison-table td.booking-col {
+    background: rgba(0, 53, 128, 0.03);
+    color: #003580;
+}
+
+.channel-comparison-table td.muted {
+    color: #ccc;
+    font-weight: 400;
+}
+
+.channel-comparison-table .pct-label {
+    font-size: 0.8em;
+    color: #888;
+    font-weight: 400;
+}
+
+/* Row types */
+.channel-comparison-table .discount-row td:first-child {
+    padding-left: 20px;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.channel-comparison-table .discount-row td.direct-col:not(.muted),
+.channel-comparison-table .discount-row td.booking-col:not(.muted) {
+    color: #c0392b;
+}
+
+.channel-comparison-table .bonus-row td:first-child {
+    padding-left: 20px;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.channel-comparison-table .bonus-row td.booking-col:not(.muted) {
+    color: #27ae60;
+}
+
+.channel-comparison-table .commission-row td:first-child {
+    padding-left: 20px;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.channel-comparison-table .commission-row td.booking-col {
+    color: #c0392b;
+}
+
+.channel-comparison-table .subtotal-row {
+    background: #f8f9fa;
+}
+
+.channel-comparison-table .subtotal-row td {
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 12px;
+}
+
+.channel-comparison-table .subtotal-row td.direct-col {
+    background: rgba(191, 96, 12, 0.08);
+    color: var(--primary-color);
+}
+
+.channel-comparison-table .subtotal-row td.booking-col {
+    background: rgba(0, 53, 128, 0.08);
+    color: #003580;
+}
+
+.channel-comparison-table .total-row {
+    background: linear-gradient(135deg, #fefaf6 0%, #fff9f4 100%);
+}
+
+.channel-comparison-table .total-row td {
+    padding: 14px 12px;
+    font-size: 1em;
+    border-bottom: none;
+}
+
+.channel-comparison-table .total-row td:first-child {
+    color: #2c3e50;
+}
+
+.channel-comparison-table .total-row td.direct-col {
+    background: linear-gradient(135deg, rgba(191, 96, 12, 0.15) 0%, rgba(191, 96, 12, 0.08) 100%);
+    color: var(--primary-color);
+    font-weight: 800;
+    font-size: 1.1em;
+}
+
+.channel-comparison-table .total-row td.booking-col {
+    background: linear-gradient(135deg, rgba(0, 53, 128, 0.15) 0%, rgba(0, 53, 128, 0.08) 100%);
+    color: #003580;
+    font-weight: 800;
+    font-size: 1.1em;
+}
+
+/* Winner highlight */
+.channel-comparison-table .total-row td.winner-cell {
+    background: linear-gradient(135deg, rgba(39, 174, 96, 0.15) 0%, rgba(39, 174, 96, 0.08) 100%) !important;
+    border: 2px solid #27ae60;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESULT SUMMARY BANNER
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.comparison-result-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+    border: 2px solid #81c784;
+    border-left-width: 5px;
+}
+
+.comparison-result-banner.booking-wins {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe8cc 100%);
+    border-color: #ffb74d;
+}
+
+.comparison-result-banner .result-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1em;
+    flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+}
+
+.comparison-result-banner.booking-wins .result-icon {
+    background: linear-gradient(135deg, #ff9800, #ffa726);
+    box-shadow: 0 3px 10px rgba(255, 152, 0, 0.3);
+}
+
+.comparison-result-banner .result-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.comparison-result-banner .result-label {
+    font-size: 0.7em;
+    font-weight: 700;
+    color: #2e7d32;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.comparison-result-banner.booking-wins .result-label {
+    color: #e65100;
+}
+
+.comparison-result-banner .result-value {
+    font-size: 1.5em;
+    font-weight: 800;
+    color: #2e7d32;
+}
+
+.comparison-result-banner.booking-wins .result-value {
+    color: #e65100;
+}
+
+.comparison-result-banner .result-amount {
+    text-align: right;
+    font-size: 1.2em;
+    font-weight: 800;
+    color: #2e7d32;
+}
+
+.comparison-result-banner.booking-wins .result-amount {
+    color: #e65100;
+}
+
+.comparison-result-banner .result-note {
+    display: block;
+    font-size: 0.55em;
+    font-weight: 600;
+    color: #558b2f;
+    text-transform: uppercase;
+}
+
+.comparison-result-banner.booking-wins .result-note {
+    color: #bf360c;
 }
 
 footer {
@@ -628,18 +1035,86 @@ footer a {
         padding: 10px 14px;
     }
 
-    /* BOOKING COMPARISON SECTION */
-    #bookingComparisonSection h3 {
+    /* ═══════════════════════════════════════════════════════════════════════
+       COMPARISON SECTION - Mobile Responsive
+       ═══════════════════════════════════════════════════════════════════════ */
+
+    .comparison-section {
+        padding: 16px;
+        margin-top: 20px;
+    }
+
+    .comparison-title {
+        font-size: 0.95em;
+    }
+
+    .comparison-inputs {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .compare-btn {
+        grid-column: span 2;
+        width: 100%;
+        min-height: 44px;
+    }
+
+    /* Comparison Table - Mobile */
+    .comparison-table-wrapper {
+        margin: 0;
+        border-radius: 8px;
+        overflow-x: auto;
+    }
+
+    .channel-comparison-table {
+        font-size: 0.75em;
+    }
+
+    .channel-comparison-table th {
+        padding: 10px 8px;
+        font-size: 0.7em;
+    }
+
+    .channel-comparison-table td {
+        padding: 8px;
+    }
+
+    .channel-comparison-table .discount-row td:first-child,
+    .channel-comparison-table .bonus-row td:first-child,
+    .channel-comparison-table .commission-row td:first-child {
+        padding-left: 12px;
+    }
+
+    .channel-comparison-table .total-row td {
+        padding: 12px 8px;
+        font-size: 0.95em;
+    }
+
+    .channel-comparison-table .total-row td.direct-col,
+    .channel-comparison-table .total-row td.booking-col {
+        font-size: 1em;
+    }
+
+    /* Result Banner - Mobile */
+    .comparison-result-banner {
+        flex-wrap: wrap;
+        padding: 12px 14px;
+        gap: 10px;
+        margin: 16px 0 0;
+    }
+
+    .comparison-result-banner .result-icon {
+        width: 36px;
+        height: 36px;
         font-size: 0.9em;
     }
 
-    /* Comparison results difference box */
-    #comparisonDifferenceBox {
-        padding: 12px;
+    .comparison-result-banner .result-value {
+        font-size: 1.3em;
     }
 
-    #comparisonDifferenceBox .result-value {
-        font-size: 1.3em;
+    .comparison-result-banner .result-amount {
+        font-size: 1em;
     }
 }
 
