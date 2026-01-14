@@ -387,8 +387,9 @@ function calculateQuotation() {
 
     document.getElementById('resultClientPrice').textContent = formatCurrency(clientPrice);
 
-    // Expected booking
-    document.getElementById('resultBookingExpected').textContent = formatCurrency(roomPrice * 1.03);
+    // Expected booking base price (afterLoyalty is ~3% cheaper than Booking base)
+    const bookingExpectedBase = afterLoyalty / 0.97;
+    document.getElementById('resultBookingExpected').textContent = formatCurrency(bookingExpectedBase);
 
     document.getElementById('resultsContainer').style.display = 'block';
     document.getElementById('noResultsMessage').style.display = 'none';
