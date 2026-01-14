@@ -226,6 +226,15 @@ function clearFieldError(element) {
 }
 
 /**
+ * Clear all error styling from the form
+ */
+function clearAllFieldErrors() {
+    document.querySelectorAll('.input-error').forEach(el => {
+        el.classList.remove('input-error');
+    });
+}
+
+/**
  * Main calculation engine
  */
 function calculateQuotation() {
