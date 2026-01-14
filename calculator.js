@@ -226,18 +226,116 @@ function saveSettings() {
 }
 
 /**
+ * Validation helper functions
+ */
+
+/**
+ * Clear error styling from a specific element
+ * @param {HTMLElement} element - The element to clear error from
+ */
+function clearFieldError(element) {
+    if (element) {
+        element.classList.remove('input-error');
+    }
+}
+
+/**
+ * Clear all error styling from the form
+ */
+function clearAllFieldErrors() {
+    document.querySelectorAll('.input-error').forEach(el => {
+        el.classList.remove('input-error');
+    });
+}
+
+/**
+ * Add error styling to an element and attach listener to clear on input
+ * @param {HTMLElement} element - The element to mark as error
+ */
+function markFieldError(element) {
+    if (element) {
+        element.classList.add('input-error');
+        // One-time listener to clear error when user interacts
+        const clearHandler = () => {
+            clearFieldError(element);
+            element.removeEventListener('input', clearHandler);
+            element.removeEventListener('change', clearHandler);
+        };
+        element.addEventListener('input', clearHandler);
+        element.addEventListener('change', clearHandler);
+    }
+}
+
+/**
+ * Validate and highlight missing fields
+ * @returns {string[]} Array of missing field names in Spanish
+ */
+function validateAndHighlightFields() {
+    clearAllFieldErrors();
+    const missingFields = [];
+
+    // Check dates (nights > 0)
+    const nights = parseInt(document.getElementById('nights').value) || 0;
+    if (nights <= 0) {
+        markFieldError(document.getElementById('checkIn'));
+        markFieldError(document.getElementById('checkOut'));
+        missingFields.push('Fechas');
+    }
+
+    // Check rooms - iterate through each room item
+    document.querySelectorAll('.room-item').forEach(item => {
+        const typeEl = item.querySelector('.room-type');
+        const priceEl = item.querySelector('.room-price');
+        const type = typeEl?.value;
+        const price = parseFloat(priceEl?.value) || 0;
+
+        if (!type) {
+            markFieldError(typeEl);
+            if (!missingFields.includes('Tipo de habitación')) {
+                missingFields.push('Tipo de habitación');
+            }
+        }
+        if (price <= 0) {
+            markFieldError(priceEl);
+            if (!missingFields.includes('Precio de habitación')) {
+                missingFields.push('Precio de habitación');
+            }
+        }
+    });
+
+    // Check regime
+    const regimeEl = document.getElementById('regime');
+    if (!regimeEl?.value) {
+        markFieldError(regimeEl);
+        missingFields.push('Régimen');
+    }
+
+    return missingFields;
+}
+
+/**
  * Main calculation engine
  */
 function calculateQuotation() {
+    // First validate and highlight missing fields
+    const missingFields = validateAndHighlightFields();
+
+    if (missingFields.length > 0) {
+        alert('Por favor, completa los campos requeridos:\n• ' + missingFields.join('\n• '));
+
+        // Scroll to first error field
+        const firstError = document.querySelector('.input-error');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstError.focus();
+        }
+        return;
+    }
+
     const nights = parseInt(document.getElementById('nights').value);
     const rooms = getRooms();
     const regime = document.getElementById('regime').value;
     const adults = parseInt(document.getElementById('adults').value) || 0;
-
-    if (!nights || rooms.length === 0 || !regime) {
-        alert('Por favor, completa los campos requeridos (*)');
-        return;
-    }
 
     let webBaseTotal = 0;
     let roomsDesc = [];
