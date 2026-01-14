@@ -235,6 +235,24 @@ function clearAllFieldErrors() {
 }
 
 /**
+ * Add error styling to an element and attach listener to clear on input
+ * @param {HTMLElement} element - The element to mark as error
+ */
+function markFieldError(element) {
+    if (element) {
+        element.classList.add('input-error');
+        // One-time listener to clear error when user interacts
+        const clearHandler = () => {
+            clearFieldError(element);
+            element.removeEventListener('input', clearHandler);
+            element.removeEventListener('change', clearHandler);
+        };
+        element.addEventListener('input', clearHandler);
+        element.addEventListener('change', clearHandler);
+    }
+}
+
+/**
  * Main calculation engine
  */
 function calculateQuotation() {
